@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="icon" type="image/png" href="imagenes/logo-optimized.png" />
+  <!-- No se indexa en buscadores: no es una pantalla para clientes, es el
+       panel para subir/borrar ofertas. No reemplaza tener la URL en
+       secreto — ver el comentario de seguridad en js/admin.js. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <title>Patrick's JK — Admin de ofertas</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <span class="logo-text">Patrick's JK — Admin</span>
+    </header>
+
+    <main>
+      <section class="screen">
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">Panel</div>
+            <h1>Ofertas</h1>
+          </div>
+        </div>
+
+        <p id="admin-mensaje" class="admin-mensaje" hidden></p>
+
+        <form id="admin-form" class="entrega-form">
+          <div class="entrega-field">
+            <label for="admin-titulo">Título de la oferta</label>
+            <input id="admin-titulo" type="text" placeholder="Ej: Domicilio gratis" maxlength="80" />
+          </div>
+          <div class="entrega-field">
+            <label for="admin-descripcion">Descripción (opcional)</label>
+            <input id="admin-descripcion" type="text" placeholder="Ej: En pedidos desde $50.000" maxlength="140" />
+          </div>
+          <button type="submit" id="admin-publicar-btn" class="entrega-submit-btn">Publicar oferta</button>
+        </form>
+
+        <div class="block-title">
+          <h2>Ofertas existentes</h2>
+        </div>
+        <p id="admin-vacio" class="ofertas-vacio" hidden>Todavía no has publicado ninguna oferta.</p>
+        <div id="admin-lista"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

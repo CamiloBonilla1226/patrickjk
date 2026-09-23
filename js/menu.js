@@ -59,32 +59,104 @@ function crearTarjetaProducto(producto) {
   }
   card.appendChild(main);
 
-  var quickAdd = document.createElement('button');
-  quickAdd.type = 'button';
-  quickAdd.className = 'quick-add';
-  quickAdd.disabled = !disponible;
-  quickAdd.setAttribute('aria-disabled', String(!disponible));
-  quickAdd.setAttribute('aria-label', 'Agregar ' + producto.nombre + ' al carrito');
-  quickAdd.innerHTML =
-    '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-      '<path d="M12 5v14M5 12h14" />' +
-    '</svg>';
-  // agregarAlCarrito y mostrarToast viven en carrito.js y navegacion.js
-  // (cargados antes que este archivo en menu.html) — ver esos archivos
-  // para el detalle de cómo se guarda el carrito.
-  quickAdd.addEventListener('click', function () {
-    // Si el producto tiene sabores, el "+" rápido no puede agregarlo
-    // directo: se abre la ficha para que el cliente elija uno primero.
-    if (producto.sabores && producto.sabores.length) {
-      abrirFichaProducto(producto.id);
-      return;
-    }
-    agregarAlCarrito(producto);
-    mostrarToast(producto.nombre + ' agregado al carrito');
-  });
-  card.appendChild(quickAdd);
+  card.appendChild(crearControlCantidad(producto));
 
   return card;
+}
+
+var ICONO_MAS =
+  '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+    '<path d="M12 5v14M5 12h14" />' +
+  '</svg>';
+
+/**
+ * Botón "+" (para agregar la primera unidad) o control "− cantidad +" (si
+ * el producto ya está en el carrito), para que el cliente no tenga que
+ * tocar "+" repetidas veces si quiere, por ejemplo, 5 cervezas.
+ *
+ * Los productos con sabores (ver productos.js) se quedan con un solo botón
+ * "+" que abre la ficha — ahí es donde se elige a cuál sabor sumarle o
+ * restarle una unidad, un contador aquí no sabría a cuál sabor aplicarle
+ * el cambio.
+ */
+function crearControlCantidad(producto) {
+  var disponible = producto.estado === 'disponible';
+  var requiereSabor = Boolean(producto.sabores && producto.sabores.length);
+  var contenedor = document.createElement('div');
+  contenedor.className = 'card-qty';
+
+  function pintar() {
+    contenedor.innerHTML = '';
+
+    if (requiereSabor) {
+      var botonSabor = document.createElement('button');
+      botonSabor.type = 'button';
+      botonSabor.className = 'quick-add';
+      botonSabor.disabled = !disponible;
+      botonSabor.setAttribute('aria-disabled', String(!disponible));
+      botonSabor.setAttribute('aria-label', 'Agregar ' + producto.nombre + ' al carrito');
+      botonSabor.innerHTML = ICONO_MAS;
+      botonSabor.addEventListener('click', function () {
+        abrirFichaProducto(producto.id);
+      });
+      contenedor.appendChild(botonSabor);
+      return;
+    }
+
+    var cantidad = obtenerCantidadEnCarrito(producto.id, undefined);
+
+    if (cantidad === 0) {
+      var botonAgregar = document.createElement('button');
+      botonAgregar.type = 'button';
+      botonAgregar.className = 'quick-add';
+      botonAgregar.disabled = !disponible;
+      botonAgregar.setAttribute('aria-disabled', String(!disponible));
+      botonAgregar.setAttribute('aria-label', 'Agregar ' + producto.nombre + ' al carrito');
+      botonAgregar.innerHTML = ICONO_MAS;
+      botonAgregar.addEventListener('click', function () {
+        agregarAlCarrito(producto);
+        mostrarToast(producto.nombre + ' agregado al carrito');
+        pintar();
+      });
+      contenedor.appendChild(botonAgregar);
+      return;
+    }
+
+    var stepper = document.createElement('div');
+    stepper.className = 'qty-controls';
+
+    var btnMenos = document.createElement('button');
+    btnMenos.type = 'button';
+    btnMenos.className = 'qty-btn';
+    btnMenos.setAttribute('aria-label', 'Quitar una unidad de ' + producto.nombre);
+    btnMenos.textContent = '−';
+    btnMenos.addEventListener('click', function () {
+      quitarUnidadDeProductoDelCarrito(producto.id, undefined);
+      pintar();
+    });
+
+    var valor = document.createElement('span');
+    valor.className = 'qty-value';
+    valor.textContent = cantidad;
+
+    var btnMas = document.createElement('button');
+    btnMas.type = 'button';
+    btnMas.className = 'qty-btn';
+    btnMas.setAttribute('aria-label', 'Agregar una unidad de ' + producto.nombre);
+    btnMas.textContent = '+';
+    btnMas.addEventListener('click', function () {
+      agregarAlCarrito(producto);
+      pintar();
+    });
+
+    stepper.appendChild(btnMenos);
+    stepper.appendChild(valor);
+    stepper.appendChild(btnMas);
+    contenedor.appendChild(stepper);
+  }
+
+  pintar();
+  return contenedor;
 }
 
 function renderizarProductos() {

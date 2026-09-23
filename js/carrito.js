@@ -104,6 +104,31 @@ function quitarDelCarrito(id) {
   actualizarVistaDelCarrito();
 }
 
+/**
+ * Cuántas unidades de este producto (con este sabor, si aplica) hay ahora
+ * mismo en el carrito. Se usa en el Menú para pintar el control -/+ de cada
+ * tarjeta con el número correcto apenas se carga la página.
+ */
+function obtenerCantidadEnCarrito(productId, sabor) {
+  const item = itemsCarrito.find(function (i) {
+    return i.productId === productId && i.sabor === (sabor || undefined);
+  });
+  return item ? item.cantidad : 0;
+}
+
+/**
+ * Como quitarDelCarrito, pero identificando la fila por el id del PRODUCTO
+ * (y su sabor) en vez del id de la fila — para pantallas como el Menú, que
+ * no guardan el id interno de cada fila del carrito.
+ */
+function quitarUnidadDeProductoDelCarrito(productId, sabor) {
+  const item = itemsCarrito.find(function (i) {
+    return i.productId === productId && i.sabor === (sabor || undefined);
+  });
+  if (!item) return;
+  quitarDelCarrito(item.id);
+}
+
 /** Vacía el carrito por completo. */
 function vaciarCarrito() {
   itemsCarrito = [];
@@ -231,6 +256,7 @@ function renderizarCarrito() {
     vacio.hidden = false;
     contenido.hidden = true;
     if (btnContinuar) btnContinuar.disabled = true;
+    ocultarSugerencias();
     return;
   }
 
@@ -245,6 +271,111 @@ function renderizarCarrito() {
   totalEl.textContent = formatPrice(calcularSubtotal());
   // "Continuar pedido" solo tiene sentido si hay al menos un producto.
   if (btnContinuar) btnContinuar.disabled = false;
+
+  renderizarSugerencias();
+}
+
+// ---- "¿Quieres agregar algo más?" ----
+// Una fila de productos baratos y disponibles, para que sea fácil
+// completar el pedido sin volver al Menú. Solo aparece con el carrito con
+// productos, y nunca repite algo que ya está en el carrito.
+const SUGERENCIAS_PRECIO_MAX = 20000;
+const SUGERENCIAS_CANTIDAD = 5;
+
+// Se baraja una sola vez por visita a carrito.html (no cada vez que se
+// agrega/quita un producto) para que la selección no cambie de golpe
+// mientras el cliente sigue armando su pedido.
+let productosSugeridosBase = null;
+
+function barajarProductos(arreglo) {
+  const resultado = arreglo.slice();
+  for (let i = resultado.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temporal = resultado[i];
+    resultado[i] = resultado[j];
+    resultado[j] = temporal;
+  }
+  return resultado;
+}
+
+function obtenerProductosSugeridos() {
+  if (!productosSugeridosBase) {
+    const candidatos = (typeof productos !== 'undefined' ? productos : []).filter(function (p) {
+      return p.estado === 'disponible' && p.precio < SUGERENCIAS_PRECIO_MAX;
+    });
+    productosSugeridosBase = barajarProductos(candidatos).slice(0, SUGERENCIAS_CANTIDAD);
+  }
+  return productosSugeridosBase;
+}
+
+function crearTarjetaSugerencia(producto) {
+  const wrap = document.createElement('div');
+  wrap.className = 'rail-card-wrap';
+  wrap.innerHTML =
+    '<button class="rail-card" type="button">' +
+      '<div class="cupwrap">' +
+        '<img src="' + producto.imagen + '" alt="' + producto.nombre + '" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy" decoding="async">' +
+      '</div>' +
+      '<h3></h3>' +
+      '<div class="price">' + formatPrice(producto.precio) + '</div>' +
+    '</button>' +
+    '<button type="button" class="rail-quick-add" aria-label="Agregar ' + producto.nombre + ' al carrito">' +
+      '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" /></svg>' +
+    '</button>';
+
+  wrap.querySelector('h3').textContent = producto.nombre;
+
+  wrap.querySelector('.rail-card').addEventListener('click', function () {
+    if (typeof abrirFichaProducto === 'function') abrirFichaProducto(producto.id);
+  });
+
+  wrap.querySelector('.rail-quick-add').addEventListener('click', function () {
+    // Igual que en el Menú: si el producto tiene sabores, el "+" rápido
+    // abre la ficha en vez de agregar directo.
+    if (producto.sabores && producto.sabores.length) {
+      if (typeof abrirFichaProducto === 'function') abrirFichaProducto(producto.id);
+      return;
+    }
+    agregarAlCarrito(producto);
+    if (typeof mostrarToast === 'function') mostrarToast(producto.nombre + ' agregado al carrito');
+    // Se vuelve a pintar todo el carrito (no solo las sugerencias): el
+    // producto recién agregado debe desaparecer de aquí y aparecer en la
+    // lista de arriba, con el total actualizado.
+    renderizarCarrito();
+  });
+
+  return wrap;
+}
+
+function ocultarSugerencias() {
+  const bloque = document.getElementById('sugerencias-bloque');
+  if (bloque) bloque.hidden = true;
+}
+
+function renderizarSugerencias() {
+  const bloque = document.getElementById('sugerencias-bloque');
+  const track = document.getElementById('sugerencias-track');
+  if (!bloque || !track) return;
+
+  const idsEnCarrito = {};
+  obtenerCarrito().forEach(function (item) {
+    idsEnCarrito[item.productId] = true;
+  });
+
+  const visibles = obtenerProductosSugeridos().filter(function (p) {
+    return !idsEnCarrito[p.id];
+  });
+
+  if (visibles.length === 0) {
+    bloque.hidden = true;
+    return;
+  }
+
+  bloque.hidden = false;
+  track.innerHTML = '';
+  visibles.forEach(function (producto) {
+    track.appendChild(crearTarjetaSugerencia(producto));
+  });
 }
 
 // ---- Modal de confirmación para "Vaciar carrito" ----

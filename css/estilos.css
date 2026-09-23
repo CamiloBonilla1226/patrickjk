@@ -211,6 +211,8 @@ main {
 }
 
 .roulette-banner {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -218,6 +220,46 @@ main {
   margin-bottom: 18px;
   background: var(--navy-2);
   border: 1px solid var(--amber);
+  animation: roulette-glow 3s ease-in-out infinite;
+}
+/* Franja de brillo que recorre el banner en diagonal, de vez en cuando. */
+.roulette-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(
+    115deg,
+    transparent,
+    color-mix(in srgb, var(--amber-soft) 55%, transparent),
+    transparent
+  );
+  animation: roulette-shine 3.6s ease-in-out infinite;
+}
+@keyframes roulette-shine {
+  0% {
+    left: -60%;
+  }
+  55%,
+  100% {
+    left: 130%;
+  }
+}
+@keyframes roulette-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 6px 0 color-mix(in srgb, var(--amber) 25%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 18px 2px color-mix(in srgb, var(--amber) 50%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .roulette-banner,
+  .roulette-banner::after {
+    animation: none;
+  }
 }
 .roulette-banner-icon {
   flex: none;
@@ -443,6 +485,116 @@ main {
   line-height: 1.6;
 }
 
+/* ================= OFERTAS ================= */
+.ofertas-cargando,
+.ofertas-vacio {
+  font-size: 12.5px;
+  color: var(--cream-dim);
+  text-align: center;
+  padding: 40px 16px;
+  line-height: 1.6;
+}
+.oferta-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid var(--amber);
+  background: var(--amber-tint);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.oferta-ico {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: var(--amber);
+  margin-top: 2px;
+}
+.oferta-texto h3 {
+  font-family: 'Fraunces';
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.oferta-texto p {
+  font-size: 12px;
+  color: var(--cream-dim);
+  line-height: 1.5;
+}
+
+/* ================= PANEL DE ADMIN (ofertas) ================= */
+.admin-mensaje {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--teal);
+  color: var(--teal);
+}
+.admin-mensaje.es-error {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.admin-oferta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--border);
+  background: var(--navy-2);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.admin-oferta-info h3 {
+  font-family: 'Work Sans';
+  font-weight: 800;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.admin-oferta-info p {
+  font-size: 11.5px;
+  color: var(--cream-dim);
+}
+.admin-oferta-acciones {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-toggle-btn {
+  appearance: none;
+  cursor: pointer;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--cream-dim);
+}
+.admin-toggle-btn.is-activa {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.admin-borrar-btn {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--cream-dim);
+}
+.admin-borrar-btn:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.admin-borrar-btn .ico {
+  width: 14px;
+  height: 14px;
+}
+
 .subtabs {
   display: flex;
   border: 1px solid var(--border-strong);
@@ -580,6 +732,12 @@ main {
   width: 5px;
   height: 5px;
   background: currentColor;
+}
+.card-qty {
+  flex: none;
+}
+.card-qty .qty-controls {
+  gap: 6px;
 }
 .quick-add,
 .rail-quick-add {

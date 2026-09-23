@@ -65,6 +65,19 @@
             Continuar pedido
           </button>
         </div>
+
+        <!-- "¿Quieres agregar algo más?": productos baratos y disponibles
+             que todavía no están en el carrito (ver renderizarSugerencias
+             en js/carrito.js). Solo se muestra con el carrito con
+             productos y si queda al menos una sugerencia por mostrar. -->
+        <div id="sugerencias-bloque" hidden>
+          <div class="block-title">
+            <h2>¿Quieres agregar algo más?</h2>
+          </div>
+          <div class="carousel">
+            <div class="carousel-track" id="sugerencias-track" data-no-swipe></div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -115,6 +128,44 @@
       </div>
     </div>
 
+    <!-- Ficha de producto: se abre al tocar una sugerencia (ver
+         js/ficha.js). Mismo bloque que en index.html/menu.html. -->
+    <div class="ficha-overlay" id="ficha-overlay" hidden>
+      <div class="ficha-sheet" id="ficha-sheet" role="dialog" aria-modal="true" aria-labelledby="ficha-nombre">
+        <div class="ficha-scroll">
+          <div class="ficha-hero" id="ficha-hero">
+            <button type="button" class="ficha-close" id="ficha-cerrar" aria-label="Cerrar">✕</button>
+            <div class="ficha-cupwrap">
+              <img id="ficha-imagen" src="" alt="" loading="lazy" decoding="async" />
+            </div>
+          </div>
+          <div class="ficha-top">
+            <h3 id="ficha-nombre"></h3>
+            <span class="status" id="ficha-estado"><span class="dot"></span><span id="ficha-estado-texto"></span></span>
+          </div>
+          <div class="ficha-body">
+            <div class="field-label">Categoría</div>
+            <p class="ficha-desc" id="ficha-categoria"></p>
+
+            <div class="ficha-group" id="ficha-sabores-grupo" hidden>
+              <div class="ficha-group-label">
+                <span>Sabor</span>
+                <span class="ficha-group-hint" id="ficha-sabor-hint">Elige uno</span>
+              </div>
+              <div class="ficha-opt-row" id="ficha-opt-row" role="radiogroup" aria-label="Sabor"></div>
+            </div>
+          </div>
+        </div>
+        <div class="ficha-footer">
+          <div class="ficha-amt">
+            <span>Total</span>
+            <b id="ficha-precio">$0</b>
+          </div>
+          <button type="button" class="ficha-add-btn" id="ficha-agregar-btn">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+
     <nav class="tabbar">
       <a href="index.html" data-tab="inicio">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -128,6 +179,13 @@
           <path d="M4 6h16M4 12h16M4 18h10" />
         </svg>
         <span>Menú</span>
+      </a>
+      <a href="ofertas.html" data-tab="ofertas">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20.6 12.3 12.7 20.2a1.5 1.5 0 0 1-2.1 0L3.8 13.4a1.5 1.5 0 0 1 0-2.1l7.9-7.9c.3-.3.7-.5 1.1-.5h6a1.5 1.5 0 0 1 1.5 1.5v6c0 .4-.2.8-.5 1.1Z" />
+          <circle cx="15.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+        <span>Ofertas</span>
       </a>
       <a href="carrito.html" data-tab="carrito">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -144,6 +202,7 @@
   <script src="js/productos.js"></script>
   <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
+  <script src="js/ficha.js"></script>
   <!-- type="module" para poder usar import dentro de ruleta.js (así se
        trae el cliente de Supabase desde un CDN sin agregar un build step
        al proyecto) — ver el comentario al inicio de ese archivo. -->
