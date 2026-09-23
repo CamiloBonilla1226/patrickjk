@@ -1,5 +1,5 @@
 // Catálogo de precios del punto físico (el estanco) — se muestra en
-// estanco.html, la carta que se escanea por QR en el local.
+// carta.html, la carta que se escanea por QR en el local.
 //
 // A propósito es un archivo y un arreglo SEPARADOS de productos.js: aunque
 // varios productos se llaman igual, varios precios son distintos a los que

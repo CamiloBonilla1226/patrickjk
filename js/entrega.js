@@ -96,7 +96,7 @@ async function manejarEnvioFormulario(e) {
   // Si el guardado en Supabase falló, se avisa en Inicio (ver
   // avisarSiVieneDeUnPedido en inicio.js) — el pedido por WhatsApp sí
   // llegó, pero no va a aparecer en el panel de admin.
-  window.location.href = 'index.html?pedido=enviado' + (guardadoOk ? '' : '&guardado=no');
+  window.location.href = 'tienda.html?pedido=enviado' + (guardadoOk ? '' : '&guardado=no');
 }
 
 /** '' si el nombre es válido, o el mensaje de error a mostrar. */

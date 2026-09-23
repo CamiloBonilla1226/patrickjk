@@ -110,7 +110,7 @@ function avisarSiVieneDeUnPedido() {
   } else {
     mostrarToast('¡Pedido enviado! Revisa WhatsApp para confirmar.');
   }
-  window.history.replaceState({}, '', 'index.html');
+  window.history.replaceState({}, '', 'tienda.html');
 }
 
 /**

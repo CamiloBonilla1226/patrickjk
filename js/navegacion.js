@@ -86,7 +86,7 @@ var SWIPE_THRESHOLD = 50; // px mínimos horizontales para contar como swipe
 var DIRECTION_RATIO = 1.5; // qué tan horizontal debe ser el gesto frente a lo vertical
 
 var TAB_ORDER = ['inicio', 'menu', 'ofertas', 'carrito'];
-var TAB_URLS = { inicio: 'index.html', menu: 'menu.html', ofertas: 'ofertas.html', carrito: 'carrito.html' };
+var TAB_URLS = { inicio: 'tienda.html', menu: 'menu.html', ofertas: 'ofertas.html', carrito: 'carrito.html' };
 
 /** Navega a la pantalla siguiente (paso=1) o anterior (paso=-1) en TAB_ORDER; no hace nada si ya está en el extremo. */
 function irAPantallaAdyacente(paso) {
