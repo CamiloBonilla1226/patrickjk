@@ -765,6 +765,18 @@ main {
   padding: 24px;
   background: color-mix(in srgb, var(--navy) 75%, transparent);
 }
+/* El navegador solo oculta un elemento con el atributo "hidden" por medio
+   de su hoja de estilos por defecto (`[hidden] { display: none }`), que
+   tiene MENOS prioridad que cualquier regla de un archivo CSS propio,
+   incluida esta misma clase (`display: flex` de arriba). Sin esta regla,
+   el atributo "hidden" queda completamente ignorado en .modal-backdrop:
+   el modal-vaciar y el modal de la ruleta se veían SIEMPRE en pantalla
+   (los dos apilados, uno encima del otro) desde que carga la página,
+   nunca estuvieron realmente ocultos por defecto — esta línea es el
+   arreglo del bug reportado. */
+.modal-backdrop[hidden] {
+  display: none;
+}
 .modal-box {
   width: 100%;
   max-width: 340px;
