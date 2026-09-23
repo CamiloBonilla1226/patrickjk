@@ -23,7 +23,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 export const RULETA_MIN_SUBTOTAL = 70000;
 
 const DEVICE_ID_KEY = 'device_id';
-const YA_JUGO_KEY = 'ruleta_ya_jugo';
 const SIGUE_INTENTANDO = 'Sigue intentando';
 
 /**
@@ -44,25 +43,22 @@ export function obtenerDeviceId() {
   return nuevo;
 }
 
-// Una vez que Supabase confirma que el dispositivo ya jugó, esa respuesta
-// nunca puede volver a "no ha jugado" — se cachea en localStorage para no
-// tener que repetir la consulta de red cada vez que el cliente arma otro
-// pedido.
-function dispositivoYaJugoLocal() {
-  return localStorage.getItem(YA_JUGO_KEY) === '1';
-}
-
-function marcarDispositivoComoJugadoLocal() {
-  localStorage.setItem(YA_JUGO_KEY, '1');
-}
-
 /**
  * true si este dispositivo ya tiene una fila registrada en la tabla
  * dispositivos_ruleta de Supabase.
+ *
+ * A propósito NO se cachea la respuesta "ya jugó" en localStorage: la tabla
+ * dispositivos_ruleta se borra por completo cada vez que la ruleta se
+ * desactiva (a mano desde el admin, o sola al llegar al máximo de jugadas —
+ * ver alternarOferta en admin.js y desactivarRuletaSiLlegoAlMaximo más
+ * abajo), justo para que todos puedan volver a jugar la próxima vez que se
+ * active. Un caché local "una vez que jugó, ya jugó para siempre" rompía
+ * ese reinicio: el dispositivo seguía bloqueado en su propio navegador aun
+ * después de que su fila ya no existiera en Supabase. Por eso esta consulta
+ * SIEMPRE se hace contra Supabase, que es la única fuente confiable ahora
+ * que se puede reiniciar.
  */
 export async function verificarSiYaJugo() {
-  if (dispositivoYaJugoLocal()) return true;
-
   const deviceId = obtenerDeviceId();
   const { data, error } = await supabase
     .from('dispositivos_ruleta')
@@ -80,9 +76,7 @@ export async function verificarSiYaJugo() {
     return false;
   }
 
-  const yaJugo = data !== null;
-  if (yaJugo) marcarDispositivoComoJugadoLocal();
-  return yaJugo;
+  return data !== null;
 }
 
 /**
@@ -183,7 +177,6 @@ export async function registrarGiro(premio) {
     console.error('No se pudo registrar el giro de la ruleta en Supabase:', error);
     return;
   }
-  marcarDispositivoComoJugadoLocal();
   await desactivarRuletaSiLlegoAlMaximo();
 }
 
