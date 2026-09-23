@@ -290,6 +290,14 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
           window.location.href = 'entrega.html';
         }
+      } catch (error) {
+        // Si deviceEsElegibleParaRuleta falla (por ejemplo, js/ruleta.js no
+        // llegó a cargar por algún bloqueo de red) el cliente no debe
+        // quedarse atascado sin poder continuar su pedido — se salta la
+        // ruleta y se va directo al formulario de entrega, igual que si no
+        // fuera elegible.
+        console.error('No se pudo verificar la elegibilidad para la ruleta, se continúa sin ella:', error);
+        window.location.href = 'entrega.html';
       } finally {
         btnContinuar.disabled = false;
         btnContinuar.textContent = textoOriginal;
