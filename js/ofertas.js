@@ -46,11 +46,11 @@ async function cargarOfertas() {
   const cargando = document.getElementById('ofertas-cargando');
   if (!lista || !vacio || !cargando) return;
 
-  const { data, error } = await supabase
-    .from('ofertas')
-    .select('id, titulo, descripcion')
-    .eq('activa', true)
-    .order('creado_en', { ascending: false });
+  // Sin .order() a propósito — mismo motivo que en el admin (admin.js /
+  // cargarPedidos): pedir que ordene por una columna cuyo nombre exacto no
+  // conocemos con certeza (creado_en, created_at...) hace fallar TODA la
+  // consulta si no existe. Se trae todo sin ordenar y se ordena aquí mismo.
+  const { data, error } = await supabase.from('ofertas').select('*').eq('activa', true);
 
   cargando.hidden = true;
 
@@ -67,7 +67,12 @@ async function cargarOfertas() {
   }
 
   vacio.hidden = true;
-  data.forEach(function (oferta) {
+  const ordenadas = data.slice().sort(function (a, b) {
+    const fechaA = a.creado_en || a.created_at || '';
+    const fechaB = b.creado_en || b.created_at || '';
+    return fechaB < fechaA ? -1 : fechaB > fechaA ? 1 : 0;
+  });
+  ordenadas.forEach(function (oferta) {
     lista.appendChild(crearTarjetaOferta(oferta));
   });
 }
@@ -98,7 +103,7 @@ async function cargarOfertaDestacada() {
 
   const { data: destacadas, error: errorDestacada } = await supabase
     .from('ofertas')
-    .select('titulo, descripcion, codigo')
+    .select('*')
     .eq('activa', true)
     .eq('destacada', true)
     .limit(5);
@@ -110,17 +115,23 @@ async function cargarOfertaDestacada() {
   }
 
   if (!oferta) {
+    // Sin .order() a propósito — ver el comentario en cargarOfertas más
+    // arriba. Se trae todo lo activo y se elige la más antigua aquí mismo.
     const { data: primeras, error: errorPrimera } = await supabase
       .from('ofertas')
-      .select('titulo, descripcion, codigo')
+      .select('*')
       .eq('activa', true)
-      .order('creado_en', { ascending: true })
-      .limit(5);
+      .limit(20);
 
     if (errorPrimera) {
       console.error('No se pudo cargar ninguna oferta de respaldo:', errorPrimera);
     } else {
-      oferta = primeraNoRuleta(primeras);
+      const ordenadas = (primeras || []).slice().sort(function (a, b) {
+        const fechaA = a.creado_en || a.created_at || '';
+        const fechaB = b.creado_en || b.created_at || '';
+        return fechaA < fechaB ? -1 : fechaA > fechaB ? 1 : 0;
+      });
+      oferta = primeraNoRuleta(ordenadas);
     }
   }
 

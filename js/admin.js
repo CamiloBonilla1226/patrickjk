@@ -111,10 +111,11 @@ async function cargarOfertas() {
   const vacio = document.getElementById('admin-ofertas-vacio');
   if (!lista || !vacio) return;
 
-  const { data, error } = await supabase
-    .from('ofertas')
-    .select('id, titulo, descripcion, activa, codigo, destacada')
-    .order('creado_en', { ascending: false });
+  // Sin .order() a propósito — mismo motivo que en cargarPedidos: pedir que
+  // ordene por una columna cuyo nombre exacto no conocemos con certeza
+  // (creado_en, created_at...) hace fallar TODA la consulta si no existe.
+  // Se trae todo sin ordenar y se ordena aquí mismo.
+  const { data, error } = await supabase.from('ofertas').select('*');
 
   if (error) {
     console.error('No se pudieron cargar las ofertas:', error);
@@ -128,7 +129,14 @@ async function cargarOfertas() {
     return;
   }
   vacio.hidden = true;
-  data.forEach(function (oferta) {
+
+  const ordenadas = data.slice().sort(function (a, b) {
+    const fechaA = a.creado_en || a.created_at || '';
+    const fechaB = b.creado_en || b.created_at || '';
+    return fechaB < fechaA ? -1 : fechaB > fechaA ? 1 : 0;
+  });
+
+  ordenadas.forEach(function (oferta) {
     lista.appendChild(crearFilaOferta(oferta));
   });
 }
@@ -209,17 +217,37 @@ function formatearFecha(fechaTexto) {
   return fecha.toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
-function crearFilaPedido(pedido) {
-  const fila = document.createElement('div');
-  fila.className = 'pedido-card';
+/**
+ * La columna `productos` debería llegar ya como un array (columna jsonb en
+ * Supabase), pero si en algún momento quedó guardada como texto plano
+ * (columna tipo texto en vez de jsonb) esto la deja utilizable en vez de
+ * mostrar el pedido vacío sin ninguna pista de por qué.
+ */
+function obtenerProductosPedido(pedido) {
+  if (Array.isArray(pedido.productos)) return pedido.productos;
+  if (typeof pedido.productos === 'string') {
+    try {
+      const parseado = JSON.parse(pedido.productos);
+      if (Array.isArray(parseado)) return parseado;
+    } catch (error) {
+      console.error('No se pudo interpretar la columna productos de un pedido:', error);
+    }
+  }
+  return [];
+}
 
-  const productos = Array.isArray(pedido.productos) ? pedido.productos : [];
-  const lineasProductos = productos
+function lineasProductosHtml(productos) {
+  return productos
     .map(function (item) {
       const nombreConSabor = item.nombre + (item.sabor ? ' (' + item.sabor + ')' : '');
       return '<div class="pedido-producto-linea">' + item.cantidad + 'x ' + nombreConSabor + '</div>';
     })
     .join('');
+}
+
+function crearFilaPedido(pedido) {
+  const fila = document.createElement('div');
+  fila.className = 'pedido-card';
 
   fila.innerHTML =
     '<div class="pedido-top">' +
@@ -228,9 +256,8 @@ function crearFilaPedido(pedido) {
     '</div>' +
     '<p class="pedido-meta"></p>' +
     '<p class="pedido-fecha"></p>' +
-    '<div class="pedido-productos">' + lineasProductos + '</div>' +
-    '<div class="pedido-premio" hidden></div>' +
     '<div class="pedido-total"><span>Total</span><b></b></div>' +
+    '<button type="button" class="pedido-ver-btn">Ver pedido</button>' +
     '<div class="pedido-acciones">' +
       '<button type="button" class="admin-desactivar-btn pedido-confirmar-btn">Confirmar pedido</button>' +
       '<button type="button" class="admin-activar-btn pedido-pendiente-btn">Marcar pendiente</button>' +
@@ -247,11 +274,9 @@ function crearFilaPedido(pedido) {
   fila.querySelector('.pedido-fecha').textContent = formatearFecha(pedido.created_at || pedido.creado_en || pedido.fecha);
   fila.querySelector('.pedido-total b').textContent = formatPrice(pedido.subtotal || pedido.total || 0);
 
-  if (pedido.codigo_premio) {
-    const premioEl = fila.querySelector('.pedido-premio');
-    premioEl.hidden = false;
-    premioEl.textContent = '🎡 Premio: ' + pedido.codigo_premio;
-  }
+  fila.querySelector('.pedido-ver-btn').addEventListener('click', function () {
+    abrirDetallePedido(pedido);
+  });
 
   const confirmado = pedido.confirmado === true;
   const badge = fila.querySelector('.pedido-badge');
@@ -352,6 +377,53 @@ async function borrarPedido(id, nombre) {
 }
 
 // ============================================================
+// Detalle de un pedido (modal: productos completos + código de premio)
+// ============================================================
+// Mismo patrón de modal casero que .modal-vaciar en carrito.js: se puede
+// cerrar con Escape, clic en el fondo o el botón X, y atrapa el foco de
+// teclado mientras está abierto.
+let elementoConFocoAntesDelDetalle = null;
+
+function abrirDetallePedido(pedido) {
+  const modal = document.getElementById('pedido-detalle-modal');
+  if (!modal) return;
+
+  document.getElementById('pedido-detalle-nombre').textContent = pedido.nombre || '(sin nombre)';
+  document.getElementById('pedido-detalle-meta').textContent = (pedido.celular || '') + ' · ' + (pedido.direccion || '');
+  document.getElementById('pedido-detalle-fecha').textContent = formatearFecha(pedido.created_at || pedido.creado_en || pedido.fecha);
+  document.getElementById('pedido-detalle-total').textContent = formatPrice(pedido.subtotal || pedido.total || 0);
+
+  const productos = obtenerProductosPedido(pedido);
+  const contenedorProductos = document.getElementById('pedido-detalle-productos');
+  contenedorProductos.innerHTML = productos.length > 0
+    ? lineasProductosHtml(productos)
+    : '<div class="pedido-producto-linea">No se guardaron los productos de este pedido.</div>';
+
+  const premioEl = document.getElementById('pedido-detalle-premio');
+  if (pedido.codigo_premio) {
+    premioEl.hidden = false;
+    premioEl.textContent = '🎡 Jugó la ruleta — código de premio: ' + pedido.codigo_premio;
+  } else {
+    premioEl.hidden = true;
+  }
+
+  elementoConFocoAntesDelDetalle = document.activeElement;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+  document.getElementById('pedido-detalle-cerrar').focus();
+}
+
+function cerrarDetallePedido() {
+  const modal = document.getElementById('pedido-detalle-modal');
+  if (!modal) return;
+
+  modal.hidden = true;
+  document.body.style.overflow = '';
+
+  if (elementoConFocoAntesDelDetalle) elementoConFocoAntesDelDetalle.focus();
+}
+
+// ============================================================
 // Utilidades compartidas
 // ============================================================
 function mostrarMensaje(texto, esError) {
@@ -372,6 +444,39 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', function () {
       cambiarSeccion(btn.dataset.seccion);
     });
+  });
+
+  const modalDetalle = document.getElementById('pedido-detalle-modal');
+  const botonCerrarDetalle = document.getElementById('pedido-detalle-cerrar');
+  if (botonCerrarDetalle) botonCerrarDetalle.addEventListener('click', cerrarDetallePedido);
+  if (modalDetalle) {
+    modalDetalle.addEventListener('click', function (e) {
+      if (e.target === modalDetalle) cerrarDetallePedido();
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    const caja = document.getElementById('pedido-detalle-caja');
+    if (!modalDetalle || modalDetalle.hidden || !caja) return;
+
+    if (e.key === 'Escape') {
+      cerrarDetallePedido();
+      return;
+    }
+
+    if (e.key !== 'Tab') return;
+    const focosPosibles = caja.querySelectorAll('button:not([disabled])');
+    if (focosPosibles.length === 0) return;
+    const primero = focosPosibles[0];
+    const ultimo = focosPosibles[focosPosibles.length - 1];
+
+    if (e.shiftKey && document.activeElement === primero) {
+      e.preventDefault();
+      ultimo.focus();
+    } else if (!e.shiftKey && document.activeElement === ultimo) {
+      e.preventDefault();
+      primero.focus();
+    }
   });
 
   const form = document.getElementById('admin-form');

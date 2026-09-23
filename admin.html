@@ -67,6 +67,27 @@
         </div>
       </section>
     </main>
+
+    <!-- Detalle de un pedido: se abre con el botón "Ver pedido" de cada
+         tarjeta (ver js/admin.js). Mismo patrón de modal que #modal-vaciar
+         en carrito.html (backdrop + caja, Escape/clic afuera/botón X,
+         foco atrapado mientras está abierto). -->
+    <div class="modal-backdrop" id="pedido-detalle-modal" hidden>
+      <div class="modal-box pedido-detalle-box" id="pedido-detalle-caja" role="dialog" aria-modal="true" aria-labelledby="pedido-detalle-nombre">
+        <div class="pedido-detalle-top">
+          <h3 class="modal-titulo" id="pedido-detalle-nombre"></h3>
+          <button type="button" class="pedido-detalle-cerrar" id="pedido-detalle-cerrar" aria-label="Cerrar">✕</button>
+        </div>
+        <p class="pedido-detalle-meta" id="pedido-detalle-meta"></p>
+        <p class="pedido-fecha" id="pedido-detalle-fecha"></p>
+        <div class="pedido-premio" id="pedido-detalle-premio" hidden></div>
+        <div class="pedido-detalle-productos" id="pedido-detalle-productos"></div>
+        <div class="pedido-total">
+          <span>Total</span>
+          <b id="pedido-detalle-total"></b>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="js/productos.js"></script>

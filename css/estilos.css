@@ -210,7 +210,11 @@ main {
   display: block;
 }
 
-.roulette-banner {
+/* Estilo "banner brillante" compartido — nació para la ruleta y ahora
+   también lo usa la oferta destacada de Inicio (#oferta-destacada), para
+   que ambos avisos llamen la atención de la misma forma. */
+.roulette-banner,
+#oferta-destacada {
   position: relative;
   overflow: hidden;
   display: flex;
@@ -229,7 +233,8 @@ main {
   display: none;
 }
 /* Franja de brillo que recorre el banner en diagonal, de vez en cuando. */
-.roulette-banner::after {
+.roulette-banner::after,
+#oferta-destacada::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -263,7 +268,9 @@ main {
 }
 @media (prefers-reduced-motion: reduce) {
   .roulette-banner,
-  .roulette-banner::after {
+  .roulette-banner::after,
+  #oferta-destacada,
+  #oferta-destacada::after {
     animation: none;
   }
 }
@@ -522,6 +529,14 @@ main {
   color: var(--amber);
   margin-top: 2px;
 }
+/* La oferta destacada de Inicio usa el mismo tamaño de ícono que el banner
+   de la ruleta (ver .roulette-banner-icon), sin el margin-top que necesita
+   la tarjeta plana de la lista de Ofertas. */
+#oferta-destacada .oferta-ico {
+  width: 28px;
+  height: 28px;
+  margin-top: 0;
+}
 .oferta-texto h3 {
   font-family: 'Fraunces';
   font-size: 14px;
@@ -725,6 +740,59 @@ main {
   flex: 1;
   padding: 9px 8px;
 }
+.pedido-ver-btn {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 8px;
+  margin-bottom: 8px;
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid var(--amber);
+}
+
+/* ================= DETALLE DE PEDIDO (modal) ================= */
+.pedido-detalle-box {
+  max-width: 380px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.pedido-detalle-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.pedido-detalle-top .modal-titulo {
+  margin-bottom: 0;
+}
+.pedido-detalle-cerrar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--cream);
+  font-size: 14px;
+}
+.pedido-detalle-meta {
+  font-size: 11.5px;
+  color: var(--cream-dim);
+  margin-bottom: 2px;
+}
+.pedido-detalle-productos {
+  border-top: 1px dashed var(--border-strong);
+  padding-top: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
 
 .subtabs {
   display: flex;
@@ -899,6 +967,23 @@ main {
   cursor: default;
   color: var(--cream-dim);
   border-color: var(--border);
+}
+/* .rail-quick-add vive dentro de .rail-card-wrap (position: relative) junto
+   a .rail-card, que ya ocupa el 100% del ancho y alto del wrap — sin
+   sacarlo del flujo normal quedaba apilado debajo de la tarjeta, como un
+   cuadrito suelto. Se flota sobre la esquina de la imagen, más pequeño para
+   no tapar el nombre/precio de una tarjeta de solo 126px de ancho. */
+.rail-quick-add {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 26px;
+  height: 26px;
+  background: color-mix(in srgb, var(--navy) 82%, transparent);
+}
+.rail-quick-add .ico {
+  width: 14px;
+  height: 14px;
 }
 
 /* ================= CARRITO ================= */
