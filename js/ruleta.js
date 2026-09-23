@@ -159,6 +159,10 @@ function extraerPorcentaje(texto) {
   return match ? Number(match[1]) : 0;
 }
 
+// Cuántas veces se puede jugar la ruleta en total (todos los dispositivos
+// juntos) desde que el admin la activa, antes de que se apague ella sola.
+const MAX_JUGADAS_RULETA = 5;
+
 /**
  * Registra en Supabase que este dispositivo ya giró la ruleta, con el
  * premio obtenido. Se debe llamar UNA SOLA VEZ, apenas termina la
@@ -180,6 +184,38 @@ export async function registrarGiro(premio) {
     return;
   }
   marcarDispositivoComoJugadoLocal();
+  await desactivarRuletaSiLlegoAlMaximo();
+}
+
+/**
+ * Cuenta cuántos dispositivos han jugado en total y, si ya se llegó al
+ * máximo (MAX_JUGADAS_RULETA), apaga la promoción sola — mismo efecto que
+ * si el admin la hubiera desactivado a mano: además de "activa: false",
+ * se reinicia dispositivos_ruleta para que la próxima vez que se active
+ * todos puedan volver a jugar desde cero (ver el mismo reinicio en
+ * admin.js → alternarOferta).
+ */
+async function desactivarRuletaSiLlegoAlMaximo() {
+  const { count, error } = await supabase
+    .from('dispositivos_ruleta')
+    .select('device_id', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('No se pudo contar cuántas veces se ha jugado la ruleta:', error);
+    return;
+  }
+  if (count === null || count < MAX_JUGADAS_RULETA) return;
+
+  const { error: errorDesactivar } = await supabase.from('ofertas').update({ activa: false }).eq('codigo', 'ruleta');
+  if (errorDesactivar) {
+    console.error('No se pudo desactivar automáticamente la ruleta al llegar al máximo de jugadas:', errorDesactivar);
+    return;
+  }
+
+  const { error: errorReinicio } = await supabase.from('dispositivos_ruleta').delete().not('device_id', 'is', null);
+  if (errorReinicio) {
+    console.error('No se pudo reiniciar dispositivos_ruleta después de apagar la ruleta automáticamente:', errorReinicio);
+  }
 }
 
 /**

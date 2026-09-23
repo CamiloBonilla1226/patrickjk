@@ -163,6 +163,22 @@ async function alternarOferta(id, nuevaActiva) {
     mostrarMensaje('Supabase no dejó actualizar esta oferta — revisa que exista la política de UPDATE en la tabla ofertas.', true);
     return;
   }
+
+  // Cada vez que la ruleta se desactiva (desde aquí o automáticamente al
+  // llegar al máximo de jugadas — ver MAX_JUGADAS_RULETA en ruleta.js) se
+  // reinicia la tabla dispositivos_ruleta, para que la próxima vez que se
+  // active todos los dispositivos puedan volver a jugar. Sin esto, un
+  // dispositivo que ya jugó en un ciclo anterior de la ruleta se quedaba
+  // bloqueado para siempre, aunque la ruleta llevara apagada mucho tiempo.
+  const ofertaActualizada = data[0];
+  if (ofertaActualizada.codigo === CODIGO_RULETA && !nuevaActiva) {
+    const { error: errorReinicio } = await supabase.from('dispositivos_ruleta').delete().not('device_id', 'is', null);
+    if (errorReinicio) {
+      console.error('No se pudo reiniciar dispositivos_ruleta:', errorReinicio);
+      mostrarMensaje('La ruleta se desactivó, pero no se pudo reiniciar la lista de quiénes ya jugaron. Revisa la consola.', true);
+    }
+  }
+
   cargarOfertas();
 }
 
