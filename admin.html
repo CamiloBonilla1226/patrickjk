@@ -34,6 +34,7 @@
         <div class="subtabs" id="admin-subtabs">
           <button type="button" class="active" data-seccion="ofertas">Ofertas</button>
           <button type="button" data-seccion="pedidos">Pedidos</button>
+          <button type="button" data-seccion="info">Información</button>
         </div>
 
         <p id="admin-mensaje" class="admin-mensaje" hidden></p>
@@ -75,6 +76,52 @@
           <p id="admin-pedidos-cargando" class="ofertas-cargando">Cargando pedidos...</p>
           <p id="admin-pedidos-vacio" class="ofertas-vacio" hidden>No hay pedidos en este rango de fechas.</p>
           <div id="admin-pedidos-lista"></div>
+        </div>
+
+        <!-- ---- Sección Información (ventas confirmadas) ---- -->
+        <div id="admin-seccion-info" hidden>
+          <!-- Solo cuenta pedidos con confirmado = true — un pedido
+               "pendiente" todavía no es una venta real (ver cargarInformacion
+               en admin.js). -->
+          <div class="subtabs" id="admin-info-filtros">
+            <button type="button" data-filtro="hoy">Hoy</button>
+            <button type="button" class="active" data-filtro="semana">Semana</button>
+            <button type="button" data-filtro="mes">Mes</button>
+            <button type="button" data-filtro="todos">Todos</button>
+          </div>
+
+          <p id="admin-info-cargando" class="ofertas-cargando">Cargando información...</p>
+          <p id="admin-info-vacio" class="ofertas-vacio" hidden>No hay ventas confirmadas en este rango de fechas.</p>
+
+          <div id="admin-info-contenido" hidden>
+            <div class="info-cards">
+              <div class="info-card">
+                <span class="info-card-label">Ventas confirmadas</span>
+                <b class="info-card-valor" id="info-ventas"></b>
+              </div>
+              <div class="info-card">
+                <span class="info-card-label">Total vendido</span>
+                <b class="info-card-valor" id="info-total"></b>
+              </div>
+              <div class="info-card">
+                <span class="info-card-label">Ticket promedio</span>
+                <b class="info-card-valor" id="info-promedio"></b>
+              </div>
+              <div class="info-card">
+                <span class="info-card-label">Con oferta / ruleta</span>
+                <b class="info-card-valor" id="info-con-oferta"></b>
+              </div>
+              <div class="info-card">
+                <span class="info-card-label">Unidades vendidas</span>
+                <b class="info-card-valor" id="info-unidades"></b>
+              </div>
+            </div>
+
+            <div class="block-title">
+              <h2>Productos más vendidos</h2>
+            </div>
+            <div id="info-productos-lista"></div>
+          </div>
         </div>
       </section>
     </main>

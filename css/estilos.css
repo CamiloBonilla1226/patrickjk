@@ -898,6 +898,62 @@ main {
   margin-bottom: 8px;
 }
 
+/* ================= PANEL DE ADMIN (información / ventas) ================= */
+.info-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--border);
+  background: var(--navy-2);
+  padding: 12px;
+}
+.info-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--cream-dim);
+}
+.info-card-valor {
+  font-size: 17px;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+.info-producto-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--border);
+  background: var(--navy-2);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+}
+.info-producto-nombre {
+  font-size: 12.5px;
+  color: var(--cream);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.info-producto-cantidad {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+.info-producto-fila:first-child .info-producto-cantidad {
+  color: var(--teal);
+}
+
 .subtabs {
   display: flex;
   border: 1px solid var(--border-strong);

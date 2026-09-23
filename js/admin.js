@@ -26,6 +26,7 @@ const CODIGO_RULETA = 'ruleta';
 // medianoche de hoy en la hora del navegador; "semana" y "mes" son 7 y 30
 // días atrás desde este momento.
 let filtroPedidosActual = 'semana';
+let filtroInfoActual = 'semana';
 
 function calcularFechaDesdeFiltro(filtro) {
   const ahora = new Date();
@@ -42,19 +43,22 @@ function calcularFechaDesdeFiltro(filtro) {
 }
 
 // ============================================================
-// Cambiar entre "Ofertas" y "Pedidos"
+// Cambiar entre "Ofertas", "Pedidos" e "Información"
 // ============================================================
+const TITULOS_SECCION = { ofertas: 'Ofertas', pedidos: 'Pedidos', info: 'Información' };
+
 function cambiarSeccion(seccion) {
-  const esOfertas = seccion === 'ofertas';
-  document.getElementById('admin-seccion-ofertas').hidden = !esOfertas;
-  document.getElementById('admin-seccion-pedidos').hidden = esOfertas;
-  document.getElementById('admin-titulo-pantalla').textContent = esOfertas ? 'Ofertas' : 'Pedidos';
+  document.getElementById('admin-seccion-ofertas').hidden = seccion !== 'ofertas';
+  document.getElementById('admin-seccion-pedidos').hidden = seccion !== 'pedidos';
+  document.getElementById('admin-seccion-info').hidden = seccion !== 'info';
+  document.getElementById('admin-titulo-pantalla').textContent = TITULOS_SECCION[seccion] || '';
 
   document.querySelectorAll('#admin-subtabs button').forEach(function (btn) {
     btn.classList.toggle('active', btn.dataset.seccion === seccion);
   });
 
-  if (!esOfertas) cargarPedidos();
+  if (seccion === 'pedidos') cargarPedidos();
+  if (seccion === 'info') cargarInformacion();
 }
 
 // ============================================================
@@ -428,6 +432,92 @@ async function borrarPedido(id, nombre) {
 }
 
 // ============================================================
+// Información (ventas confirmadas — para análisis, no para operar)
+// ============================================================
+/**
+ * Trae los pedidos CONFIRMADOS del rango de fechas elegido y calcula todo
+ * en el navegador (no hay tantos pedidos en un bar como para que esto
+ * pese) — un pedido "pendiente" todavía no es una venta real, así que
+ * nunca cuenta aquí, sin importar el filtro de fecha.
+ */
+async function cargarInformacion() {
+  const cargando = document.getElementById('admin-info-cargando');
+  const vacio = document.getElementById('admin-info-vacio');
+  const contenido = document.getElementById('admin-info-contenido');
+  if (!cargando || !vacio || !contenido) return;
+
+  cargando.hidden = false;
+  vacio.hidden = true;
+  contenido.hidden = true;
+
+  let consulta = supabase.from('pedidos').select('*').eq('confirmado', true);
+  const desde = calcularFechaDesdeFiltro(filtroInfoActual);
+  if (desde) {
+    consulta = consulta.gte('creado_en', desde.toISOString());
+  }
+  const { data, error } = await consulta;
+
+  cargando.hidden = true;
+
+  if (error) {
+    console.error('No se pudo cargar la información de ventas:', error);
+    mostrarMensaje('No se pudo cargar la información de ventas. Revisa la consola.', true);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    vacio.hidden = false;
+    return;
+  }
+
+  const totalVentas = data.length;
+  const totalVendido = data.reduce(function (suma, pedido) {
+    return suma + Number(pedido.total || pedido.subtotal || 0);
+  }, 0);
+  const conOferta = data.filter(function (pedido) {
+    return !!pedido.codigo_premio;
+  }).length;
+
+  // Cuenta unidades por nombre de producto (con el sabor incluido en la
+  // etiqueta, para no mezclar "Electrolit Uva" con "Electrolit Fresa Kiwi"
+  // bajo un mismo conteo) sumando los productos de todos los pedidos del
+  // rango.
+  const unidadesPorProducto = {};
+  let totalUnidades = 0;
+  data.forEach(function (pedido) {
+    obtenerProductosPedido(pedido).forEach(function (item) {
+      const etiqueta = item.nombre + (item.sabor ? ' (' + item.sabor + ')' : '');
+      const cantidad = Number(item.cantidad) || 0;
+      unidadesPorProducto[etiqueta] = (unidadesPorProducto[etiqueta] || 0) + cantidad;
+      totalUnidades += cantidad;
+    });
+  });
+
+  document.getElementById('info-ventas').textContent = String(totalVentas);
+  document.getElementById('info-total').textContent = formatPrice(totalVendido);
+  document.getElementById('info-promedio').textContent = formatPrice(Math.round(totalVendido / totalVentas));
+  document.getElementById('info-con-oferta').textContent = conOferta + ' de ' + totalVentas;
+  document.getElementById('info-unidades').textContent = String(totalUnidades);
+
+  const listaProductos = document.getElementById('info-productos-lista');
+  listaProductos.innerHTML = '';
+  Object.keys(unidadesPorProducto)
+    .sort(function (a, b) {
+      return unidadesPorProducto[b] - unidadesPorProducto[a];
+    })
+    .forEach(function (etiqueta) {
+      const fila = document.createElement('div');
+      fila.className = 'info-producto-fila';
+      fila.innerHTML = '<span class="info-producto-nombre"></span><span class="info-producto-cantidad"></span>';
+      fila.querySelector('.info-producto-nombre').textContent = etiqueta;
+      fila.querySelector('.info-producto-cantidad').textContent = unidadesPorProducto[etiqueta] + ' und.';
+      listaProductos.appendChild(fila);
+    });
+
+  contenido.hidden = false;
+}
+
+// ============================================================
 // Detalle de un pedido (modal: productos completos + código de premio)
 // ============================================================
 // Mismo patrón de modal casero que .modal-vaciar en carrito.js: se puede
@@ -505,6 +595,17 @@ document.addEventListener('DOMContentLoaded', function () {
         b.classList.toggle('active', b === btn);
       });
       cargarPedidos();
+    });
+  });
+
+  document.querySelectorAll('#admin-info-filtros button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.dataset.filtro === filtroInfoActual) return;
+      filtroInfoActual = btn.dataset.filtro;
+      document.querySelectorAll('#admin-info-filtros button').forEach(function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      cargarInformacion();
     });
   });
 
