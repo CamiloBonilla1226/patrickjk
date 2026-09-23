@@ -189,8 +189,55 @@ function configurarSwipeDePantalla() {
   }
 }
 
+// ---- Insignia del carrito en la barra inferior ----
+// Muestra la cantidad total de unidades en el carrito sobre el ícono de la
+// tab "Carrito", en cualquier pantalla que tenga la barra inferior. Se
+// actualiza desde actualizarVistaDelCarrito (js/carrito.js), el único punto
+// por el que pasa cualquier cambio al carrito.
+function calcularCantidadTotalCarrito() {
+  if (typeof obtenerCarrito !== 'function') return 0;
+  return obtenerCarrito().reduce(function (total, item) {
+    return total + item.cantidad;
+  }, 0);
+}
+
+function actualizarBadgeCarrito(animar) {
+  var badge = document.getElementById('tab-carrito-badge');
+  if (!badge) return;
+
+  var cantidad = calcularCantidadTotalCarrito();
+  badge.textContent = cantidad > 99 ? '99+' : String(cantidad);
+  badge.hidden = cantidad === 0;
+
+  if (animar && cantidad > 0) {
+    // Quitar y volver a poner la clase (con un respiro de por medio) es lo
+    // que permite que la animación se vuelva a disparar aunque ya estuviera
+    // puesta de un agregado anterior — si solo se agregara la clase, el
+    // navegador no la repite porque, a sus ojos, "no cambió nada".
+    badge.classList.remove('tab-badge-animar');
+    void badge.offsetWidth;
+    badge.classList.add('tab-badge-animar');
+  }
+}
+
+// ---- "Slot" de promoción en Inicio (banner de ruleta / oferta destacada) ----
+// Dos módulos deciden, cada uno por su lado y por red, si algo se muestra
+// ahí (actualizarBannerRuleta en inicio.js, cargarOfertaDestacada en
+// ofertas.js). Mientras cualquiera de los dos sigue esperando respuesta de
+// Supabase, #promo-skeleton reserva el espacio (ver esa clase en
+// estilos.css) para que el resto de Inicio no salte de golpe cuando por fin
+// se sabe si hay algo que mostrar. Cada uno avisa aquí cuando termina.
+var promoChecksPendientes = 2;
+function marcarPromoCheckListo() {
+  promoChecksPendientes -= 1;
+  if (promoChecksPendientes > 0) return;
+  var skeleton = document.getElementById('promo-skeleton');
+  if (skeleton) skeleton.hidden = true;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   pintarEstadoAbierto();
   marcarTabActiva();
   configurarSwipeDePantalla();
+  actualizarBadgeCarrito(false);
 });

@@ -28,6 +28,14 @@
           <img class="hero-image" src="imagenes/hero-inicio.jpeg" alt="Patrick's JK" />
         </div>
 
+        <!-- Reserva el espacio del banner de ruleta/oferta mientras las dos
+             consultas a Supabase (ruletaEstaActiva y cargarOfertaDestacada)
+             siguen en curso — sin esto, el aviso aparecía de último y
+             empujaba el resto de la página hacia abajo de un salto. Se
+             oculta apenas ambas consultas terminan (ver
+             marcarPromoCheckListo en js/navegacion.js). -->
+        <div class="promo-skeleton" id="promo-skeleton" aria-hidden="true"></div>
+
         <!-- Oculto por defecto: js/inicio.js lo muestra solo si el admin
              tiene la "oferta" de la ruleta activa (ver ruletaEstaActiva en
              js/ruleta.js) — así nunca hay un parpadeo de "aparece y luego
@@ -198,11 +206,14 @@
         <span>Ofertas</span>
       </a>
       <a href="carrito.html" data-tab="carrito">
-        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6" />
-          <circle cx="9" cy="20" r="1.4" />
-          <circle cx="18" cy="20" r="1.4" />
-        </svg>
+        <span class="tab-icon-wrap">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6" />
+            <circle cx="9" cy="20" r="1.4" />
+            <circle cx="18" cy="20" r="1.4" />
+          </svg>
+          <span class="tab-badge" id="tab-carrito-badge" hidden>0</span>
+        </span>
         <span>Carrito</span>
       </a>
     </nav>

@@ -99,73 +99,84 @@ function primeraNoRuleta(ofertas) {
  * está activa, ya tiene su propio banner (ver actualizarBannerRuleta en
  * inicio.js) y esta tarjeta se queda oculta aunque exista una oferta
  * destacada — mostrar los dos juntos es justo el bug que se reportó.
+ *
+ * Sin importar cómo termine, avisa con marcarPromoCheckListo (definida en
+ * js/navegacion.js) — es la otra de las dos consultas que #promo-skeleton
+ * espera antes de dejar de reservar espacio en la pantalla.
  */
 async function cargarOfertaDestacada() {
   const contenedor = document.getElementById('oferta-destacada');
-  if (!contenedor) return; // esta página no tiene el bloque de oferta destacada
+  if (!contenedor) {
+    if (typeof marcarPromoCheckListo === 'function') marcarPromoCheckListo();
+    return; // esta página no tiene el bloque de oferta destacada
+  }
 
-  if (typeof ruletaEstaActiva === 'function') {
-    try {
-      const ruletaActiva = await ruletaEstaActiva();
-      if (ruletaActiva) {
-        contenedor.hidden = true;
-        return;
+  try {
+    if (typeof ruletaEstaActiva === 'function') {
+      try {
+        const ruletaActiva = await ruletaEstaActiva();
+        if (ruletaActiva) {
+          contenedor.hidden = true;
+          return;
+        }
+      } catch (error) {
+        console.error('No se pudo verificar si la ruleta está activa antes de mostrar la oferta destacada:', error);
       }
-    } catch (error) {
-      console.error('No se pudo verificar si la ruleta está activa antes de mostrar la oferta destacada:', error);
     }
-  }
 
-  let oferta = null;
+    let oferta = null;
 
-  const { data: destacadas, error: errorDestacada } = await supabase
-    .from('ofertas')
-    .select('*')
-    .eq('activa', true)
-    .eq('destacada', true)
-    .limit(5);
-
-  if (errorDestacada) {
-    console.error('No se pudo cargar la oferta destacada:', errorDestacada);
-  } else {
-    oferta = primeraNoRuleta(destacadas);
-  }
-
-  if (!oferta) {
-    // Sin .order() a propósito — ver el comentario en cargarOfertas más
-    // arriba. Se trae todo lo activo y se elige la más antigua aquí mismo.
-    const { data: primeras, error: errorPrimera } = await supabase
+    const { data: destacadas, error: errorDestacada } = await supabase
       .from('ofertas')
       .select('*')
       .eq('activa', true)
-      .limit(20);
+      .eq('destacada', true)
+      .limit(5);
 
-    if (errorPrimera) {
-      console.error('No se pudo cargar ninguna oferta de respaldo:', errorPrimera);
+    if (errorDestacada) {
+      console.error('No se pudo cargar la oferta destacada:', errorDestacada);
     } else {
-      const ordenadas = (primeras || []).slice().sort(function (a, b) {
-        const fechaA = a.creado_en || a.created_at || '';
-        const fechaB = b.creado_en || b.created_at || '';
-        return fechaA < fechaB ? -1 : fechaA > fechaB ? 1 : 0;
-      });
-      oferta = primeraNoRuleta(ordenadas);
+      oferta = primeraNoRuleta(destacadas);
     }
-  }
 
-  if (!oferta) {
-    contenedor.hidden = true;
-    return;
-  }
+    if (!oferta) {
+      // Sin .order() a propósito — ver el comentario en cargarOfertas más
+      // arriba. Se trae todo lo activo y se elige la más antigua aquí mismo.
+      const { data: primeras, error: errorPrimera } = await supabase
+        .from('ofertas')
+        .select('*')
+        .eq('activa', true)
+        .limit(20);
 
-  contenedor.querySelector('.oferta-destacada-titulo').textContent = oferta.titulo;
-  const descripcionEl = contenedor.querySelector('.oferta-destacada-desc');
-  if (oferta.descripcion) {
-    descripcionEl.hidden = false;
-    descripcionEl.textContent = oferta.descripcion;
-  } else {
-    descripcionEl.hidden = true;
+      if (errorPrimera) {
+        console.error('No se pudo cargar ninguna oferta de respaldo:', errorPrimera);
+      } else {
+        const ordenadas = (primeras || []).slice().sort(function (a, b) {
+          const fechaA = a.creado_en || a.created_at || '';
+          const fechaB = b.creado_en || b.created_at || '';
+          return fechaA < fechaB ? -1 : fechaA > fechaB ? 1 : 0;
+        });
+        oferta = primeraNoRuleta(ordenadas);
+      }
+    }
+
+    if (!oferta) {
+      contenedor.hidden = true;
+      return;
+    }
+
+    contenedor.querySelector('.oferta-destacada-titulo').textContent = oferta.titulo;
+    const descripcionEl = contenedor.querySelector('.oferta-destacada-desc');
+    if (oferta.descripcion) {
+      descripcionEl.hidden = false;
+      descripcionEl.textContent = oferta.descripcion;
+    } else {
+      descripcionEl.hidden = true;
+    }
+    contenedor.hidden = false;
+  } finally {
+    if (typeof marcarPromoCheckListo === 'function') marcarPromoCheckListo();
   }
-  contenedor.hidden = false;
 }
 
 document.addEventListener('DOMContentLoaded', function () {

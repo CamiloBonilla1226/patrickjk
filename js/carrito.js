@@ -79,7 +79,7 @@ function agregarAlCarrito(producto) {
   }
 
   guardarCarritoEnStorage();
-  actualizarVistaDelCarrito();
+  actualizarVistaDelCarrito(true);
 }
 
 /**
@@ -176,13 +176,17 @@ function calcularSubtotal() {
 /**
  * Punto único que se llama al final de cada función que modifica el
  * carrito, para refrescar cualquier indicador visual que esté en pantalla
- * en ese momento. Por ahora, el único indicador es la lista del propio
- * Carrito — si más adelante se agrega un contador en la tab de abajo, este
- * es el lugar donde se actualizaría también.
+ * en ese momento: la lista del propio Carrito, y la insignia con la
+ * cantidad sobre el ícono de la tab de abajo (ver actualizarBadgeCarrito en
+ * js/navegacion.js). `animarBadge` solo debe ser true cuando se acaba de
+ * AGREGAR un producto — quitar o vaciar no necesita el rebote.
  */
-function actualizarVistaDelCarrito() {
+function actualizarVistaDelCarrito(animarBadge) {
   if (typeof renderizarCarrito === 'function') {
     renderizarCarrito();
+  }
+  if (typeof actualizarBadgeCarrito === 'function') {
+    actualizarBadgeCarrito(!!animarBadge);
   }
 }
 

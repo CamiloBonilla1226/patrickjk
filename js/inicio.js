@@ -119,14 +119,24 @@ function avisarSiVieneDeUnPedido() {
  * js/ruleta.js y admin.html). Empieza oculto en el HTML a propósito, para
  * no mostrarlo un instante y esconderlo justo después mientras se confirma
  * con Supabase.
+ *
+ * Sin importar cómo termine, avisa con marcarPromoCheckListo (definida en
+ * js/navegacion.js) — es una de las dos consultas que #promo-skeleton
+ * espera antes de dejar de reservar espacio en la pantalla.
  */
 async function actualizarBannerRuleta() {
   const banner = document.getElementById('roulette-banner');
-  if (!banner) return;
-  if (typeof ruletaEstaActiva !== 'function') return; // js/ruleta.js no llegó a cargar
+  if (!banner || typeof ruletaEstaActiva !== 'function') {
+    if (typeof marcarPromoCheckListo === 'function') marcarPromoCheckListo();
+    return;
+  }
 
-  const activa = await ruletaEstaActiva();
-  banner.hidden = !activa;
+  try {
+    const activa = await ruletaEstaActiva();
+    banner.hidden = !activa;
+  } finally {
+    if (typeof marcarPromoCheckListo === 'function') marcarPromoCheckListo();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function () {

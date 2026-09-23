@@ -149,6 +149,53 @@ main {
   width: 20px;
   height: 20px;
 }
+.tab-icon-wrap {
+  position: relative;
+  display: inline-flex;
+}
+/* Insignia con la cantidad total de unidades en el carrito — ver
+   actualizarBadgeCarrito en js/navegacion.js. */
+.tab-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink-on-accent);
+  background: var(--amber);
+  border-radius: 8px;
+}
+.tab-badge[hidden] {
+  display: none;
+}
+/* Rebote corto cuando se agrega un producto — se re-dispara quitando y
+   volviendo a poner la clase (ver actualizarBadgeCarrito). */
+.tab-badge.tab-badge-animar {
+  animation: tab-badge-pop 0.4s ease;
+}
+@keyframes tab-badge-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.45);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-badge.tab-badge-animar {
+    animation: none;
+  }
+}
 .tabbar a span {
   font-size: 9.5px;
   font-weight: 700;
@@ -208,6 +255,41 @@ main {
      hacia abajo cuando llegue. */
   aspect-ratio: 1600 / 872;
   display: block;
+}
+
+/* Reserva el mismo espacio que ocupa el banner de ruleta/oferta mientras
+   las dos consultas a Supabase siguen en curso (ver promo-skeleton en
+   index.html y marcarPromoCheckListo en js/navegacion.js) — mismo alto y
+   margen que .roulette-banner, para que no haya salto cuando se reemplaza
+   por el contenido real (o desaparece del todo, si no hay nada que
+   mostrar). */
+.promo-skeleton {
+  height: 58px;
+  margin-bottom: 18px;
+  background: linear-gradient(
+    100deg,
+    var(--navy-2) 30%,
+    color-mix(in srgb, var(--navy-2) 55%, var(--border-strong)) 50%,
+    var(--navy-2) 70%
+  );
+  background-size: 250% 100%;
+  animation: promo-skeleton-pulso 1.4s ease-in-out infinite;
+}
+.promo-skeleton[hidden] {
+  display: none;
+}
+@keyframes promo-skeleton-pulso {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo-skeleton {
+    animation: none;
+  }
 }
 
 /* Estilo "banner brillante" compartido — nació para la ruleta y ahora
