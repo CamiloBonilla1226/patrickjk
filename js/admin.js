@@ -514,7 +514,6 @@ async function cargarInformacion() {
 
   document.getElementById('info-ventas').textContent = String(totalVentas);
   document.getElementById('info-total').textContent = formatPrice(totalVendido);
-  document.getElementById('info-promedio').textContent = formatPrice(Math.round(totalVendido / totalVentas));
   document.getElementById('info-con-oferta').textContent = conOferta + ' de ' + totalVentas;
   document.getElementById('info-unidades').textContent = String(totalUnidades);
 
