@@ -23,6 +23,27 @@
 // }
 
 const productosEstanco = [
+  // Alcohol
+  { nombre: 'José Cuervo', precio: 130000, categoria: 'Alcohol' },
+  { nombre: 'José Cuervo Media', precio: 70000, categoria: 'Alcohol' },
+  { nombre: 'Baileys', precio: 120000, categoria: 'Alcohol' },
+  { nombre: 'Old Parr', precio: 260000, categoria: 'Alcohol' },
+  { nombre: "Buchanan's Deluxe", precio: 280000, categoria: 'Alcohol' },
+  { nombre: "Buchanan's Máster", precio: 340000, categoria: 'Alcohol' },
+  { nombre: 'Aguardiente Antioqueño', precio: 80000, categoria: 'Alcohol' },
+  { nombre: 'Aguardiente Antioqueño Media', precio: 37000, categoria: 'Alcohol' },
+  { nombre: 'Aguardiente Caucano', precio: 60000, categoria: 'Alcohol' },
+  { nombre: 'Aguardiente Caucano Media', precio: 35000, categoria: 'Alcohol' },
+  { nombre: 'Aguardiente Amarillo', precio: 85000, categoria: 'Alcohol' },
+  { nombre: 'Aguardiente Amarillo Media', precio: 40000, categoria: 'Alcohol' },
+  { nombre: 'Smirnoff Tamarindo', precio: 80000, categoria: 'Alcohol' },
+  { nombre: 'Smirnoff Lulo', precio: 80000, categoria: 'Alcohol' },
+  { nombre: 'Smirnoff Lulo Media', precio: 45000, categoria: 'Alcohol' },
+  { nombre: 'Ron Tradicional', precio: 85000, categoria: 'Alcohol' },
+  { nombre: 'Ron Tradicional Media', precio: 45000, categoria: 'Alcohol' },
+  { nombre: 'Ron Esencial', precio: 70000, categoria: 'Alcohol' },
+  { nombre: 'Ron Esencial Media', precio: 40000, categoria: 'Alcohol' },
+
   // Cervezas
   { nombre: 'Poker', precio: 5000, categoria: 'Cervezas' },
   { nombre: 'Corona', precio: 8000, categoria: 'Cervezas' },
@@ -65,27 +86,6 @@ const productosEstanco = [
   { nombre: "Bomba Patrick's", precio: 18000, categoria: 'Bebidas', descripcion: 'Electrolit + Bon Fiest' },
   { nombre: 'Bomba JK', precio: 13000, categoria: 'Bebidas', descripcion: 'Soda + Bon Fiest + Limón' },
   { nombre: 'Vive 100', precio: 5000, categoria: 'Bebidas', sabores: ['Original', 'Sandía'] },
-
-  // Alcohol
-  { nombre: 'José Cuervo', precio: 130000, categoria: 'Alcohol' },
-  { nombre: 'José Cuervo Media', precio: 70000, categoria: 'Alcohol' },
-  { nombre: 'Baileys', precio: 120000, categoria: 'Alcohol' },
-  { nombre: 'Old Parr', precio: 260000, categoria: 'Alcohol' },
-  { nombre: "Buchanan's Deluxe", precio: 280000, categoria: 'Alcohol' },
-  { nombre: "Buchanan's Máster", precio: 340000, categoria: 'Alcohol' },
-  { nombre: 'Aguardiente Antioqueño', precio: 80000, categoria: 'Alcohol' },
-  { nombre: 'Aguardiente Antioqueño Media', precio: 37000, categoria: 'Alcohol' },
-  { nombre: 'Aguardiente Caucano', precio: 60000, categoria: 'Alcohol' },
-  { nombre: 'Aguardiente Caucano Media', precio: 35000, categoria: 'Alcohol' },
-  { nombre: 'Aguardiente Amarillo', precio: 85000, categoria: 'Alcohol' },
-  { nombre: 'Aguardiente Amarillo Media', precio: 40000, categoria: 'Alcohol' },
-  { nombre: 'Smirnoff Tamarindo', precio: 80000, categoria: 'Alcohol' },
-  { nombre: 'Smirnoff Lulo', precio: 80000, categoria: 'Alcohol' },
-  { nombre: 'Smirnoff Lulo Media', precio: 45000, categoria: 'Alcohol' },
-  { nombre: 'Ron Tradicional', precio: 85000, categoria: 'Alcohol' },
-  { nombre: 'Ron Tradicional Media', precio: 45000, categoria: 'Alcohol' },
-  { nombre: 'Ron Esencial', precio: 70000, categoria: 'Alcohol' },
-  { nombre: 'Ron Esencial Media', precio: 40000, categoria: 'Alcohol' },
 ];
 
 // Categorías derivadas del catálogo (en el orden en que aparecen), igual
