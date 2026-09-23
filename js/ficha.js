@@ -9,8 +9,6 @@
 // id y no hacen nada si no los encuentran — así es igual de seguro cargar
 // este archivo en cualquier pantalla.
 
-const FICHA_FEEDBACK_MS = 1500; // cuánto dura el "¡Agregado!" antes de volver a "Agregar al carrito"
-
 let productoAbiertoEnFicha = null; // el producto completo (de productos.js) que muestra la ficha ahora mismo
 let saborSeleccionadoEnFicha = null;
 let elementoConFocoAntesDeLaFicha = null;
@@ -30,6 +28,10 @@ function elementosFicha() {
     optRow: document.getElementById('ficha-opt-row'),
     precio: document.getElementById('ficha-precio'),
     agregarBtn: document.getElementById('ficha-agregar-btn'),
+    qtyControls: document.getElementById('ficha-qty-controls'),
+    qtyMenos: document.getElementById('ficha-qty-menos'),
+    qtyValor: document.getElementById('ficha-qty-valor'),
+    qtyMas: document.getElementById('ficha-qty-mas'),
   };
 }
 
@@ -71,8 +73,37 @@ function pintarFicha(producto) {
   }
 
   const faltaElegirSabor = requiereSabor && !saborSeleccionadoEnFicha;
-  els.agregarBtn.disabled = !disponible || faltaElegirSabor;
-  els.agregarBtn.textContent = !disponible ? 'Agotado' : 'Agregar al carrito';
+
+  // Mientras falte elegir sabor no se sabe a qué fila del carrito
+  // preguntarle la cantidad — se trata como "0" y se muestra el botón de
+  // agregar (deshabilitado hasta que elija uno), igual que antes.
+  const saborActivo = requiereSabor ? saborSeleccionadoEnFicha : undefined;
+  const cantidadActual = (disponible && !faltaElegirSabor && typeof obtenerCantidadEnCarrito === 'function')
+    ? obtenerCantidadEnCarrito(producto.id, saborActivo)
+    : 0;
+
+  if (cantidadActual > 0) {
+    // Ya hay unidades de este producto (con este sabor, si aplica) en el
+    // carrito — se reemplaza el botón de agregar por el control "− n +",
+    // para sumar o restar sin tener que cerrar la ficha. Se deshabilita el
+    // botón de agregar (además de ocultarlo): el atrapa-foco del modal (ver
+    // más abajo) busca botones "no deshabilitados" para el Tab, y un botón
+    // oculto pero sin deshabilitar podría quedarse recibiendo foco aunque
+    // no se vea.
+    els.agregarBtn.hidden = true;
+    els.agregarBtn.disabled = true;
+    els.qtyControls.hidden = false;
+    els.qtyMenos.disabled = false;
+    els.qtyMas.disabled = false;
+    els.qtyValor.textContent = String(cantidadActual);
+  } else {
+    els.agregarBtn.hidden = false;
+    els.qtyControls.hidden = true;
+    els.qtyMenos.disabled = true;
+    els.qtyMas.disabled = true;
+    els.agregarBtn.disabled = !disponible || faltaElegirSabor;
+    els.agregarBtn.textContent = !disponible ? 'Agotado' : 'Agregar al carrito';
+  }
 }
 
 /** Abre la ficha del producto con este id (de productos.js). No hace nada si el id no existe o la página no tiene el panel de ficha. */
@@ -106,11 +137,17 @@ function cerrarFichaProducto() {
   if (elementoConFocoAntesDeLaFicha) elementoConFocoAntesDeLaFicha.focus();
 }
 
+/** true si productoAbiertoEnFicha requiere elegir sabor y todavía no se eligió ninguno. */
+function faltaElegirSaborAhora() {
+  const requiereSabor = Boolean(productoAbiertoEnFicha.sabores && productoAbiertoEnFicha.sabores.length);
+  return requiereSabor && !saborSeleccionadoEnFicha;
+}
+
 function manejarAgregarDesdeFicha() {
   if (!productoAbiertoEnFicha) return;
   const requiereSabor = Boolean(productoAbiertoEnFicha.sabores && productoAbiertoEnFicha.sabores.length);
   if (productoAbiertoEnFicha.estado === 'agotado') return;
-  if (requiereSabor && !saborSeleccionadoEnFicha) return;
+  if (faltaElegirSaborAhora()) return;
 
   agregarAlCarrito({
     id: productoAbiertoEnFicha.id,
@@ -124,17 +161,30 @@ function manejarAgregarDesdeFicha() {
     mostrarToast(productoAbiertoEnFicha.nombre + ' agregado al carrito');
   }
 
-  const els = elementosFicha();
-  const productoAgregado = productoAbiertoEnFicha;
-  els.agregarBtn.disabled = true;
-  els.agregarBtn.textContent = '¡Agregado!';
-  saborSeleccionadoEnFicha = null;
+  // El botón de agregar se reemplaza de una vez por el control "− n +" (ver
+  // pintarFicha) — esa transformación ya es la confirmación visual, no hace
+  // falta un texto "¡Agregado!" aparte.
+  pintarFicha(productoAbiertoEnFicha);
+}
 
-  setTimeout(function () {
-    // Si el cliente ya cerró la ficha (o abrió otro producto) para cuando
-    // se cumple el tiempo, no hay que pintar nada encima de lo nuevo.
-    if (productoAbiertoEnFicha === productoAgregado) pintarFicha(productoAgregado);
-  }, FICHA_FEEDBACK_MS);
+/** Suma una unidad más — llamado desde el "+" del control "− n +" cuando el producto ya está en el carrito. */
+function manejarSumarDesdeFicha() {
+  if (!productoAbiertoEnFicha || faltaElegirSaborAhora()) return;
+  agregarAlCarrito({
+    id: productoAbiertoEnFicha.id,
+    nombre: productoAbiertoEnFicha.nombre,
+    precio: productoAbiertoEnFicha.precio,
+    estado: productoAbiertoEnFicha.estado,
+    sabor: saborSeleccionadoEnFicha || undefined,
+  });
+  pintarFicha(productoAbiertoEnFicha);
+}
+
+/** Resta una unidad — llamado desde el "−" del control "− n +". */
+function manejarRestarDesdeFicha() {
+  if (!productoAbiertoEnFicha || typeof quitarUnidadDeProductoDelCarrito !== 'function') return;
+  quitarUnidadDeProductoDelCarrito(productoAbiertoEnFicha.id, saborSeleccionadoEnFicha || undefined);
+  pintarFicha(productoAbiertoEnFicha);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -143,6 +193,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   els.cerrar.addEventListener('click', cerrarFichaProducto);
   els.agregarBtn.addEventListener('click', manejarAgregarDesdeFicha);
+  if (els.qtyMas) els.qtyMas.addEventListener('click', manejarSumarDesdeFicha);
+  if (els.qtyMenos) els.qtyMenos.addEventListener('click', manejarRestarDesdeFicha);
 
   // Clic en el fondo oscuro para cerrar (el overlay ocupa toda la pantalla;
   // el "fondo" es cualquier clic que no caiga dentro de la tarjeta .ficha-sheet).

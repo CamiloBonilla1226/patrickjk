@@ -1528,6 +1528,35 @@ main {
   background: var(--amber);
   padding: 14px 10px;
 }
+/* Reemplaza a .ficha-add-btn (mismo espacio, mismo flex:1) en cuanto este
+   producto ya tiene alguna unidad en el carrito — ver pintarFicha en
+   js/ficha.js. Mismos colores que el botón de agregar (fondo ámbar), para
+   que se sienta como el mismo control cambiando de forma, no uno distinto. */
+.ficha-qty-controls {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 12px;
+  background: var(--amber);
+}
+.ficha-qty-controls[hidden] {
+  display: none;
+}
+.ficha-qty-controls .qty-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--ink-on-accent);
+  color: var(--ink-on-accent);
+  font-size: 17px;
+}
+.ficha-qty-controls .qty-value {
+  color: var(--ink-on-accent);
+  font-size: 15px;
+  font-weight: 800;
+}
 .ficha-add-btn:disabled {
   cursor: not-allowed;
   color: var(--cream-dim);
