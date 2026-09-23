@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="icon" type="image/png" href="imagenes/logo-optimized.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <title>Patrick's JK — Carta</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<!-- Carta del punto físico (el estanco): se escanea por QR en el local.
+     Es solo para mostrar precios — no hay carrito, ficha de producto ni
+     barra de navegación inferior, a propósito: nadie compra desde acá, solo
+     consulta qué hay y cuánto vale. Usa su propio catálogo
+     (js/productos-estanco.js), separado del de domicilio, porque varios
+     precios son distintos entre los dos puntos de venta. -->
+<body class="estanco-page">
+  <div class="app">
+    <header class="topbar">
+      <span class="logo-text">Patrick's JK</span>
+    </header>
+
+    <main>
+      <section class="screen">
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">Punto físico</div>
+            <h1>Carta</h1>
+          </div>
+          <img class="sec-head-logo" src="imagenes/logo-optimized.png" alt="Patrick's JK" />
+        </div>
+
+        <!-- Saltos rápidos a cada categoría — la carta completa vive en una
+             sola página (sin pestañas ni JS de filtrado) para que cargue
+             rápido y sea simple de leer desde el celular de un cliente. -->
+        <nav class="estanco-nav" id="estanco-nav" aria-label="Ir a categoría"></nav>
+
+        <div id="estanco-contenido"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/productos.js"></script>
+  <script src="js/productos-estanco.js"></script>
+  <script src="js/estanco.js"></script>
+</body>
+</html>
