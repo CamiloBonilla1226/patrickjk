@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="icon" type="image/png" href="imagenes/logo-optimized.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <title>Patrick's JK — Entrega</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <span class="logo-text">Patrick's JK</span>
+      <div class="openpill">
+        <span class="dot"></span>
+        <span class="estado-texto">Abierto</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- No hay tabs inferiores aquí a propósito: esto es un paso de
+           checkout (carrito -> entrega -> WhatsApp), no una de las tres
+           secciones principales de la app. "Volver al carrito" cumple el
+           mismo papel que el botón de cerrar del modal en el proyecto
+           React. -->
+      <section class="screen" id="pantalla-entrega">
+        <a class="entrega-volver" href="carrito.html">‹ Volver al carrito</a>
+
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">Un paso más</div>
+            <h1>Datos de entrega</h1>
+          </div>
+        </div>
+
+        <form id="form-entrega" class="entrega-form" novalidate>
+          <div class="entrega-field">
+            <label for="entrega-nombre">Nombre completo</label>
+            <input
+              id="entrega-nombre"
+              type="text"
+              autocomplete="name"
+              aria-describedby="entrega-nombre-error"
+            />
+            <p class="entrega-error" id="entrega-nombre-error"></p>
+          </div>
+
+          <div class="entrega-field">
+            <label for="entrega-celular">Celular</label>
+            <input
+              id="entrega-celular"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              placeholder="Ej: 300 123 4567"
+              aria-describedby="entrega-celular-error"
+            />
+            <p class="entrega-error" id="entrega-celular-error"></p>
+          </div>
+
+          <div class="entrega-field">
+            <label for="entrega-direccion">Dirección de entrega</label>
+            <input
+              id="entrega-direccion"
+              type="text"
+              autocomplete="street-address"
+              aria-describedby="entrega-direccion-error"
+            />
+            <p class="entrega-error" id="entrega-direccion-error"></p>
+          </div>
+
+          <button type="submit" class="entrega-submit-btn">
+            Enviar pedido por WhatsApp
+          </button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script>window.PAGINA_ACTUAL = 'entrega';</script>
+  <script src="js/productos.js"></script>
+  <script src="js/carrito.js"></script>
+  <script src="js/navegacion.js"></script>
+  <script src="js/pedido.js"></script>
+  <!-- Solo se necesita aquí por guardarPedidoSupabase (Tarea 4) — ver el
+       comentario al inicio de js/ruleta.js sobre por qué es un módulo. -->
+  <script type="module" src="js/ruleta.js"></script>
+  <script src="js/entrega.js"></script>
+</body>
+</html>

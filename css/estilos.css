@@ -795,6 +795,243 @@ main {
   border-color: var(--amber);
 }
 
+/* ================= RULETA (modal, Tarea 4) ================= */
+.ruleta-sheet {
+  width: 100%;
+  max-width: 400px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--navy-2);
+  border: 1px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+}
+.ruleta-top {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.ruleta-top h3 {
+  font-family: 'Fraunces';
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--cream);
+}
+.ruleta-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--cream);
+  appearance: none;
+  cursor: pointer;
+}
+.ruleta-close:disabled {
+  cursor: not-allowed;
+  color: var(--cream-dim);
+  border-color: var(--border);
+}
+
+.ruleta-body {
+  flex: none;
+  padding: 18px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ruleta-wheel-wrap {
+  position: relative;
+  width: min(78vw, 300px);
+  aspect-ratio: 1;
+  flex: none;
+  margin: 4px auto 12px;
+  filter: drop-shadow(0 14px 22px color-mix(in srgb, var(--navy) 70%, transparent));
+}
+.ruleta-wheel-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--amber) 22%, transparent), transparent 72%);
+  z-index: 0;
+}
+.ruleta-pointer {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 20px;
+  height: 26px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, var(--amber-soft), var(--amber));
+  clip-path: polygon(50% 100%, 4% 34%, 22% 0%, 78% 0%, 96% 34%);
+  filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--navy) 60%, transparent));
+  z-index: 3;
+}
+.ruleta-wheel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid var(--border-strong);
+  box-shadow:
+    0 0 0 2px var(--navy-2),
+    0 0 0 5px color-mix(in srgb, var(--amber) 35%, transparent);
+  will-change: transform;
+}
+.ruleta-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--amber-soft), var(--amber));
+  border: 2px solid var(--navy-2);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--navy) 55%, transparent);
+  z-index: 2;
+}
+
+.ruleta-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24%;
+  margin-left: -12%;
+  height: 50%;
+  transform-origin: 50% 0%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4%;
+  pointer-events: none;
+  color: var(--ink-on-accent);
+}
+.ruleta-label span {
+  display: block;
+  text-align: center;
+  font-family: 'Work Sans', sans-serif;
+  font-size: clamp(8px, 2.1vw, 10px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.ruleta-result-area {
+  flex: none;
+  min-height: 40px;
+  padding: 4px 12px 0;
+  text-align: center;
+}
+.ruleta-result-area:empty {
+  min-height: 0;
+}
+#ruleta-resultado {
+  font-family: 'Work Sans';
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--amber);
+}
+
+.ruleta-actions {
+  flex: none;
+  padding: 12px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+}
+.ruleta-btn {
+  width: 100%;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Fraunces';
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--ink-on-accent);
+  background: linear-gradient(180deg, var(--amber-soft), var(--amber));
+  padding: 13px 10px;
+}
+.ruleta-btn:disabled {
+  cursor: not-allowed;
+  color: var(--cream-dim);
+  background: var(--navy);
+  border: 1px solid var(--border-strong);
+}
+
+/* ================= ENTREGA (formulario de datos de entrega) ================= */
+.entrega-volver {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cream-dim);
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.entrega-volver:hover {
+  color: var(--amber);
+}
+
+.entrega-field {
+  margin-bottom: 16px;
+}
+.entrega-field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--cream-dim);
+  margin-bottom: 6px;
+}
+.entrega-field input {
+  width: 100%;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 13px;
+  color: var(--cream);
+  background: var(--navy-2);
+  border: 1px solid var(--border-strong);
+  padding: 11px 10px;
+}
+.entrega-field input::placeholder {
+  color: var(--cream-dim);
+}
+.entrega-field input:focus {
+  outline: none;
+  border-color: var(--amber);
+}
+.entrega-field input[aria-invalid='true'] {
+  border-color: var(--amber);
+}
+.entrega-error {
+  min-height: 15px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--amber-soft);
+}
+
+.entrega-submit-btn {
+  width: 100%;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Fraunces';
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--ink-on-accent);
+  background: var(--amber);
+  padding: 14px 10px;
+  margin-top: 6px;
+}
+
 /* ================= TOAST (confirmación breve, sin alert()) ================= */
 .toast {
   position: fixed;

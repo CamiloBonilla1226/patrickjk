@@ -23,9 +23,11 @@
     </header>
 
     <main>
-      <!-- El formulario de entrega, la ruleta y el envío por WhatsApp son
-           tareas aparte — por eso "Continuar pedido" más abajo no hace
-           nada todavía. -->
+      <!-- "Continuar pedido" llama a deviceEsElegibleParaRuleta (Tarea 4,
+           ver js/carrito.js): si el subtotal es >= $70.000 y el
+           dispositivo no ha jugado, se abre el modal de la ruleta de aquí
+           abajo antes de entrega.html; si no, va directo a entrega.html
+           como ya funcionaba desde la Tarea 3. -->
       <section class="screen" id="tab-carrito">
         <div class="sec-head">
           <div>
@@ -60,7 +62,7 @@
           </button>
 
           <button type="button" id="btn-continuar" class="cart-continuar-btn" disabled>
-            Continuar pedido (próximamente)
+            Continuar pedido
           </button>
         </div>
       </section>
@@ -75,6 +77,39 @@
         <div class="modal-actions">
           <button type="button" id="modal-cancelar" class="modal-btn-secundario">Cancelar</button>
           <button type="button" id="modal-confirmar" class="modal-btn-principal">Sí, vaciar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de la ruleta de descuentos (Tarea 4). Se abre desde el botón
+         "Continuar pedido" cuando el carrito es elegible (ver js/carrito.js
+         y js/ruleta.js). Se arma como un modal (backdrop + tarjeta) en vez
+         de una pantalla completa, a propósito, para poder cerrarlo con un
+         clic en el fondo oscuro (uno de los tres métodos de cierre que
+         pide la Tarea 4), cosa que una pantalla completa sin "afuera" no
+         permitiría. -->
+    <div class="modal-backdrop" id="ruleta-overlay" hidden>
+      <div class="ruleta-sheet" id="ruleta-sheet" role="dialog" aria-modal="true" aria-labelledby="ruletaTitle">
+        <div class="ruleta-top">
+          <h3 id="ruletaTitle">¡Gira la ruleta!</h3>
+          <button type="button" class="ruleta-close" id="ruleta-cerrar" aria-label="Cerrar">✕</button>
+        </div>
+
+        <div class="ruleta-body">
+          <div class="ruleta-wheel-wrap">
+            <div class="ruleta-pointer" aria-hidden="true"></div>
+            <!-- Los 12 rótulos de premio y el conic-gradient de colores se
+                 arman en JS (pintarRueda, en js/ruleta.js) porque cambian
+                 cada vez que se abre el modal: se sortea 50/50 cuál de las
+                 dos ruletas (A o B) le toca al cliente. -->
+            <div class="ruleta-wheel" id="ruleta-wheel"></div>
+            <div class="ruleta-hub" aria-hidden="true"></div>
+          </div>
+          <div class="ruleta-result-area" id="ruleta-resultado"></div>
+        </div>
+
+        <div class="ruleta-actions">
+          <button type="button" class="ruleta-btn" id="ruleta-btn-accion">Girar</button>
         </div>
       </div>
     </div>
@@ -107,5 +142,9 @@
   <script>window.PAGINA_ACTUAL = 'carrito';</script>
   <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
+  <!-- type="module" para poder usar import dentro de ruleta.js (así se
+       trae el cliente de Supabase desde un CDN sin agregar un build step
+       al proyecto) — ver el comentario al inicio de ese archivo. -->
+  <script type="module" src="js/ruleta.js"></script>
 </body>
 </html>

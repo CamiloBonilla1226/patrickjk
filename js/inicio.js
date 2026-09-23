@@ -88,7 +88,22 @@ function pintarCategorias() {
   });
 }
 
+/**
+ * entrega.js redirige aquí con "?pedido=enviado" justo después de mandar el
+ * pedido por WhatsApp — se muestra un toast breve de confirmación y se
+ * limpia la URL (con replaceState) para que recargar la página no lo
+ * vuelva a mostrar.
+ */
+function avisarSiVieneDeUnPedido() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('pedido') !== 'enviado') return;
+
+  mostrarToast('¡Pedido enviado! Revisa WhatsApp para confirmar.');
+  window.history.replaceState({}, '', 'index.html');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   pintarCarrusel();
   pintarCategorias();
+  avisarSiVieneDeUnPedido();
 });
