@@ -94,10 +94,27 @@ function primeraNoRuleta(ofertas) {
  * consulta falla), usa como respaldo la oferta activa más antigua — así
  * Inicio siempre muestra algo mientras exista al menos una oferta activa,
  * sin que el admin tenga que elegir una a la fuerza.
+ *
+ * En Inicio solo debe verse UN aviso de promoción a la vez: si la ruleta
+ * está activa, ya tiene su propio banner (ver actualizarBannerRuleta en
+ * inicio.js) y esta tarjeta se queda oculta aunque exista una oferta
+ * destacada — mostrar los dos juntos es justo el bug que se reportó.
  */
 async function cargarOfertaDestacada() {
   const contenedor = document.getElementById('oferta-destacada');
   if (!contenedor) return; // esta página no tiene el bloque de oferta destacada
+
+  if (typeof ruletaEstaActiva === 'function') {
+    try {
+      const ruletaActiva = await ruletaEstaActiva();
+      if (ruletaActiva) {
+        contenedor.hidden = true;
+        return;
+      }
+    } catch (error) {
+      console.error('No se pudo verificar si la ruleta está activa antes de mostrar la oferta destacada:', error);
+    }
+  }
 
   let oferta = null;
 

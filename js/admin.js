@@ -47,13 +47,15 @@ function crearFilaOferta(oferta) {
 
   fila.innerHTML =
     '<div class="admin-oferta-info">' +
-      '<h3></h3>' +
+      '<div class="admin-oferta-top">' +
+        '<h3></h3>' +
+        '<span class="oferta-badge"></span>' +
+      '</div>' +
       '<p></p>' +
     '</div>' +
     '<div class="admin-oferta-acciones">' +
       '<button type="button" class="admin-destacar-btn">★ Destacar en Inicio</button>' +
-      '<button type="button" class="admin-activar-btn">Activar</button>' +
-      '<button type="button" class="admin-desactivar-btn">Desactivar</button>' +
+      '<button type="button" class="admin-toggle-btn"></button>' +
       '<button type="button" class="admin-borrar-btn" aria-label="Borrar oferta">' +
         '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
           '<path d="M4 7h16" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />' +
@@ -62,8 +64,7 @@ function crearFilaOferta(oferta) {
       '</button>' +
     '</div>';
 
-  fila.querySelector('h3').textContent =
-    (oferta.destacada ? '★ ' : '') + oferta.titulo + (esRuleta ? ' 🎡' : '');
+  fila.querySelector('h3').textContent = oferta.titulo + (esRuleta ? ' 🎡' : '');
   const descripcionEl = fila.querySelector('p');
   if (oferta.descripcion) {
     descripcionEl.textContent = oferta.descripcion;
@@ -71,15 +72,19 @@ function crearFilaOferta(oferta) {
     descripcionEl.remove();
   }
 
-  const botonActivar = fila.querySelector('.admin-activar-btn');
-  const botonDesactivar = fila.querySelector('.admin-desactivar-btn');
-  botonActivar.disabled = oferta.activa === true;
-  botonDesactivar.disabled = oferta.activa === false;
-  botonActivar.addEventListener('click', function () {
-    alternarOferta(oferta.id, true);
-  });
-  botonDesactivar.addEventListener('click', function () {
-    alternarOferta(oferta.id, false);
+  const estaActiva = oferta.activa === true;
+  const badge = fila.querySelector('.oferta-badge');
+  badge.textContent = estaActiva ? 'Activa' : 'Inactiva';
+  badge.className = 'oferta-badge' + (estaActiva ? ' es-activa' : '');
+
+  // Un solo botón que hace lo contrario del estado actual, en vez de dos
+  // botones activar/desactivar (uno siempre deshabilitado) — la insignia de
+  // arriba ya dice el estado, este botón solo dice la acción a realizar.
+  const botonToggle = fila.querySelector('.admin-toggle-btn');
+  botonToggle.textContent = estaActiva ? 'Desactivar' : 'Activar';
+  botonToggle.className = 'admin-toggle-btn ' + (estaActiva ? 'es-desactivar' : 'es-activar');
+  botonToggle.addEventListener('click', function () {
+    alternarOferta(oferta.id, !estaActiva);
   });
 
   const botonBorrar = fila.querySelector('.admin-borrar-btn');

@@ -571,15 +571,36 @@ main {
   padding: 12px;
   margin-bottom: 8px;
 }
+.admin-oferta-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
 .admin-oferta-info h3 {
   font-family: 'Work Sans';
   font-weight: 800;
   font-size: 13px;
-  margin-bottom: 2px;
 }
 .admin-oferta-info p {
   font-size: 11.5px;
   color: var(--cream-dim);
+}
+/* Insignia de estado, para que "activa/inactiva" se entienda de un vistazo
+   sin tener que fijarse en cuál de dos botones está deshabilitado. */
+.oferta-badge {
+  flex: none;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--cream-dim);
+  border: 1px solid var(--border-strong);
+  padding: 3px 7px;
+}
+.oferta-badge.es-activa {
+  color: var(--teal);
+  border-color: var(--teal);
 }
 .admin-oferta-row {
   flex-wrap: wrap;
@@ -592,8 +613,7 @@ main {
   flex-wrap: wrap;
 }
 .admin-destacar-btn,
-.admin-activar-btn,
-.admin-desactivar-btn {
+.admin-toggle-btn {
   appearance: none;
   cursor: pointer;
   font-size: 10px;
@@ -612,18 +632,16 @@ main {
   border-color: var(--amber);
   color: var(--amber);
 }
-.admin-activar-btn:not(:disabled) {
+/* Un solo botón que cambia de texto y color según la acción que va a hacer
+   (en vez de dos botones activar/desactivar, uno siempre deshabilitado —
+   confuso porque no queda claro cuál manda). */
+.admin-toggle-btn.es-activar {
   border-color: var(--teal);
   color: var(--teal);
 }
-.admin-desactivar-btn:not(:disabled) {
+.admin-toggle-btn.es-desactivar {
   border-color: var(--amber);
   color: var(--amber);
-}
-.admin-activar-btn:disabled,
-.admin-desactivar-btn:disabled {
-  cursor: default;
-  opacity: 0.4;
 }
 .admin-borrar-btn {
   flex: none;
