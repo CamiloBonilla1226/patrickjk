@@ -96,16 +96,15 @@
             <span>Total</span>
             <b id="ficha-precio">$0</b>
           </div>
-          <button type="button" class="ficha-add-btn" id="ficha-agregar-btn">Agregar al carrito</button>
-          <!-- Oculto por defecto: js/ficha.js lo muestra en vez del botón de
-               arriba en cuanto este producto (con el sabor elegido, si
-               aplica) ya tiene alguna unidad en el carrito — así se puede
-               sumar o restar sin cerrar la ficha. -->
-          <div class="ficha-qty-controls" id="ficha-qty-controls" hidden>
-            <button type="button" class="qty-btn" id="ficha-qty-menos" aria-label="Quitar una unidad">−</button>
-            <span class="qty-value" id="ficha-qty-valor">0</span>
-            <button type="button" class="qty-btn" id="ficha-qty-mas" aria-label="Agregar una unidad">+</button>
+          <!-- Elige la cantidad ANTES de agregar (empieza en 1) — recién al
+               tocar "Agregar al carrito" se suma todo de una vez (ver
+               js/ficha.js). -->
+          <div class="ficha-qty-controls" id="ficha-qty-controls">
+            <button type="button" class="qty-btn" id="ficha-qty-menos" aria-label="Restar una unidad">−</button>
+            <span class="qty-value" id="ficha-qty-valor">1</span>
+            <button type="button" class="qty-btn" id="ficha-qty-mas" aria-label="Sumar una unidad">+</button>
           </div>
+          <button type="button" class="ficha-add-btn" id="ficha-agregar-btn">Agregar al carrito</button>
         </div>
       </div>
     </div>

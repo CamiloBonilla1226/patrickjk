@@ -56,8 +56,8 @@ const productos = [
   { id: 'mecato-cheetos', nombre: 'Cheetos', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-cheetos.webp' },
   { id: 'mecato-natuchips', nombre: 'Natuchips', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-natuchips.webp' },
   { id: 'mecato-doritos', nombre: 'Doritos', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-doritos.webp' },
-  { id: 'mecato-chochitos-medianos', nombre: 'Chochitos Medianos', precio: 10000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-chochitos-medianos.webp' },
-  { id: 'mecato-chochitos-grandes', nombre: 'Chochitos Grandes', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-chochitos-grandes.webp' },
+  { id: 'mecato-chochitos-medianos', nombre: 'Chochitos Medianos', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-chochitos-medianos.webp' },
+  { id: 'mecato-chochitos-grandes', nombre: 'Chochitos Grandes', precio: 10000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-chochitos-grandes.webp' },
   { id: 'mecato-chochitos-pequenos', nombre: 'Chochitos Pequeños', precio: 3000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-chochitos-pequenos.webp' },
 
   // Bebidas

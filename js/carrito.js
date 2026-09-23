@@ -42,10 +42,15 @@ function guardarCarritoEnStorage() {
 }
 
 /**
- * Agrega un producto al carrito (o le suma 1 a la cantidad si ya estaba).
- * `producto` puede ser un producto de productos.js (con más campos) o
- * cualquier objeto que al menos tenga { id, nombre, precio }; si tiene
- * `sabor`, esa fila del carrito queda ligada a ese sabor.
+ * Agrega un producto al carrito (o le suma `cantidad` a la fila si ya
+ * estaba). `producto` puede ser un producto de productos.js (con más
+ * campos) o cualquier objeto que al menos tenga { id, nombre, precio }; si
+ * tiene `sabor`, esa fila del carrito queda ligada a ese sabor.
+ *
+ * `cantidad` (opcional, por defecto 1) permite sumar varias unidades de una
+ * sola vez — lo usa la ficha de producto (ver js/ficha.js), donde el
+ * cliente elige la cantidad ANTES de agregar en vez de tocar "+" una vez
+ * por unidad.
  *
  * Cada fila del carrito tiene su propio `id` (un identificador al azar,
  * distinto del id del producto) — hace falta porque un mismo producto con
@@ -54,7 +59,9 @@ function guardarCarritoEnStorage() {
  * del producto se guarda aparte, en `productId`, para poder identificar de
  * qué producto se trata sin depender del id de la fila.
  */
-function agregarAlCarrito(producto) {
+function agregarAlCarrito(producto, cantidad) {
+  cantidad = cantidad && cantidad > 0 ? cantidad : 1;
+
   if (producto.estado === 'agotado') {
     console.warn('No se puede agregar un producto agotado:', producto.nombre);
     return;
@@ -66,14 +73,14 @@ function agregarAlCarrito(producto) {
   });
 
   if (itemExistente) {
-    itemExistente.cantidad += 1;
+    itemExistente.cantidad += cantidad;
   } else {
     itemsCarrito.push({
       id: crypto.randomUUID(),
       productId: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
-      cantidad: 1,
+      cantidad: cantidad,
       sabor: sabor,
     });
   }

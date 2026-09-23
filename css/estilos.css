@@ -1488,6 +1488,7 @@ main {
 .ficha-footer {
   flex: none;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
@@ -1495,7 +1496,7 @@ main {
   background: var(--navy-2);
 }
 .ficha-amt {
-  flex: none;
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -1515,8 +1516,27 @@ main {
   color: var(--cream);
   font-variant-numeric: tabular-nums;
 }
+/* Elige CUÁNTAS unidades agregar (siempre visible, empieza en 1) — el
+   cliente primero arma la cantidad aquí y recién con .ficha-add-btn se
+   agrega todo de una vez (ver js/ficha.js). Vive en la misma fila que el
+   total, a la derecha. */
+.ficha-qty-controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ficha-qty-controls .qty-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+}
+.ficha-qty-controls .qty-value {
+  min-width: 18px;
+  font-size: 14px;
+}
 .ficha-add-btn {
-  flex: 1;
+  flex-basis: 100%;
   appearance: none;
   border: 0;
   cursor: pointer;
@@ -1527,35 +1547,6 @@ main {
   color: var(--ink-on-accent);
   background: var(--amber);
   padding: 14px 10px;
-}
-/* Reemplaza a .ficha-add-btn (mismo espacio, mismo flex:1) en cuanto este
-   producto ya tiene alguna unidad en el carrito — ver pintarFicha en
-   js/ficha.js. Mismos colores que el botón de agregar (fondo ámbar), para
-   que se sienta como el mismo control cambiando de forma, no uno distinto. */
-.ficha-qty-controls {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 4px 12px;
-  background: var(--amber);
-}
-.ficha-qty-controls[hidden] {
-  display: none;
-}
-.ficha-qty-controls .qty-btn {
-  width: 32px;
-  height: 32px;
-  background: transparent;
-  border: 1px solid var(--ink-on-accent);
-  color: var(--ink-on-accent);
-  font-size: 17px;
-}
-.ficha-qty-controls .qty-value {
-  color: var(--ink-on-accent);
-  font-size: 15px;
-  font-weight: 800;
 }
 .ficha-add-btn:disabled {
   cursor: not-allowed;
