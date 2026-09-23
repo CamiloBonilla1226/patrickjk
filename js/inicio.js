@@ -1,7 +1,7 @@
 // Lógica específica de la pantalla Inicio: carrusel de "Más pedidos" y
-// grilla de categorías. Igual que en el Menú, tocar una tarjeta y el botón
-// "+" son solo visuales por ahora — la ficha de producto y el carrito se
-// implementan en una tarea aparte.
+// grilla de categorías. Tocar una tarjeta del carrusel abre la ficha del
+// producto (ver ficha.js) — igual que en el proyecto React, el carrusel de
+// Inicio no tiene botón "+" propio, solo abre la ficha.
 
 var FEATURED_COUNT = 5;
 
@@ -46,6 +46,9 @@ function crearTarjetaCarrusel(producto) {
       '<div class="price">' + formatPrice(producto.precio) + '</div>' +
     '</button>';
   wrap.querySelector('h3').textContent = producto.nombre;
+  wrap.querySelector('.rail-card').addEventListener('click', function () {
+    abrirFichaProducto(producto.id);
+  });
   return wrap;
 }
 

@@ -1,9 +1,12 @@
 // Lógica compartida por las tres pantallas (Inicio, Menú, Carrito):
 // - el estado "Abierto/Cerrado" del encabezado superior
 // - resaltar la pestaña activa en la barra inferior
+// - deslizar con el dedo para cambiar de pantalla (ver el bloque de swipe
+//   más abajo)
 //
 // Cada archivo .html define window.PAGINA_ACTUAL ('inicio' | 'menu' | 'carrito')
-// antes de cargar este script, para que sepamos qué botón marcar como activo.
+// antes de cargar este script, para que sepamos qué botón marcar como activo
+// y a qué pantalla ir al deslizar.
 
 // Jueves, viernes, sábado y domingo abren hasta la 1am (horario extendido).
 var DIAS_TRASNOCHE = [4, 5, 6, 0];
@@ -73,7 +76,121 @@ function mostrarToast(mensaje) {
   }, 1600);
 }
 
+// ---- Deslizar para cambiar de pantalla (swipe) ----
+// Mismo gesto que en el proyecto React (ver src/utils/useSwipeNavigation.js
+// ahí): un arrastre horizontal de al menos SWIPE_THRESHOLD píxeles, más
+// horizontal que vertical, cambia de pantalla. Como aquí cada pantalla es
+// un archivo .html distinto (no una sola app que cambia de vista sin
+// recargar), "cambiar de pantalla" simplemente navega a otro .html.
+var SWIPE_THRESHOLD = 50; // px mínimos horizontales para contar como swipe
+var DIRECTION_RATIO = 1.5; // qué tan horizontal debe ser el gesto frente a lo vertical
+
+var TAB_ORDER = ['inicio', 'menu', 'carrito'];
+var TAB_URLS = { inicio: 'index.html', menu: 'menu.html', carrito: 'carrito.html' };
+
+/** Navega a la pantalla siguiente (paso=1) o anterior (paso=-1) en TAB_ORDER; no hace nada si ya está en el extremo. */
+function irAPantallaAdyacente(paso) {
+  var indiceActual = TAB_ORDER.indexOf(window.PAGINA_ACTUAL);
+  if (indiceActual === -1) return;
+  var siguiente = TAB_ORDER[indiceActual + paso];
+  if (siguiente) window.location.href = TAB_URLS[siguiente];
+}
+
+/**
+ * Agrega el gesto de swipe horizontal a `elemento`. No dispara nada si el
+ * arrastre empieza dentro de algo marcado `data-no-swipe` (el buscador del
+ * Menú, el carrusel de Inicio — elementos que ya usan el toque para lo
+ * suyo), ni si `opciones.estaDeshabilitado()` devuelve true (por ejemplo,
+ * con la ficha de producto o algún modal abierto encima).
+ */
+function agregarSwipeHandlers(elemento, opciones) {
+  var inicioToque = null;
+
+  elemento.addEventListener(
+    'touchstart',
+    function (e) {
+      if ((opciones.estaDeshabilitado && opciones.estaDeshabilitado()) || e.target.closest('[data-no-swipe]')) {
+        inicioToque = null;
+        return;
+      }
+      var touch = e.touches[0];
+      inicioToque = { x: touch.clientX, y: touch.clientY };
+    },
+    { passive: true },
+  );
+
+  elemento.addEventListener(
+    'touchend',
+    function (e) {
+      if (!inicioToque) return;
+      var touch = e.changedTouches[0];
+      var dx = touch.clientX - inicioToque.x;
+      var dy = touch.clientY - inicioToque.y;
+      inicioToque = null;
+
+      if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+      if (Math.abs(dx) < Math.abs(dy) * DIRECTION_RATIO) return; // gesto más vertical que horizontal: scroll normal
+
+      if (dx < 0) {
+        if (opciones.onSwipeLeft) opciones.onSwipeLeft();
+      } else if (opciones.onSwipeRight) {
+        opciones.onSwipeRight();
+      }
+    },
+    { passive: true },
+  );
+
+  elemento.addEventListener('touchcancel', function () {
+    inicioToque = null;
+  });
+}
+
+/** true si algún modal/ficha está abierto en la pantalla actual — el swipe se desactiva mientras tanto. */
+function hayAlgunModalAbierto() {
+  var overlaysAbiertos = document.querySelectorAll(
+    '.modal-backdrop:not([hidden]), .ficha-overlay:not([hidden])',
+  );
+  return overlaysAbiertos.length > 0;
+}
+
+function configurarSwipeDePantalla() {
+  var main = document.querySelector('main');
+  if (main) {
+    agregarSwipeHandlers(main, {
+      estaDeshabilitado: hayAlgunModalAbierto,
+      // En el Menú, deslizar primero recorre las categorías (avanzarCategoria/
+      // retrocederCategoria, definidas en menu.js) y solo cambia de pantalla
+      // al pasarse de la primera o la última categoría — por eso, si esas
+      // funciones existen y devuelven true (ya manejaron el gesto), no se
+      // navega a otra pantalla encima.
+      onSwipeLeft: function () {
+        if (typeof avanzarCategoria === 'function' && avanzarCategoria()) return;
+        irAPantallaAdyacente(1);
+      },
+      onSwipeRight: function () {
+        if (typeof retrocederCategoria === 'function' && retrocederCategoria()) return;
+        irAPantallaAdyacente(-1);
+      },
+    });
+  }
+
+  // Deslizar sobre la barra de navegación de abajo siempre cambia de
+  // pantalla directamente, sin pasar por las categorías del Menú.
+  var tabbar = document.querySelector('.tabbar');
+  if (tabbar) {
+    agregarSwipeHandlers(tabbar, {
+      onSwipeLeft: function () {
+        irAPantallaAdyacente(1);
+      },
+      onSwipeRight: function () {
+        irAPantallaAdyacente(-1);
+      },
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   pintarEstadoAbierto();
   marcarTabActiva();
+  configurarSwipeDePantalla();
 });

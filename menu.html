@@ -32,7 +32,11 @@
           <img class="sec-head-logo" src="imagenes/logo-optimized.png" alt="Patrick's JK" />
         </div>
 
-        <div class="search-box">
+        <!-- data-no-swipe: el gesto de deslizar entre categorías (ver
+             js/navegacion.js) ignora cualquier arrastre que empiece aquí,
+             para no interferir mientras el cliente toca o selecciona texto
+             en el buscador. -->
+        <div class="search-box" data-no-swipe>
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="10.5" cy="10.5" r="6.5" />
             <path d="M20 20l-4.8-4.8" />
@@ -54,6 +58,48 @@
         </div>
       </section>
     </main>
+
+    <!-- Ficha de producto: se abre al tocar una tarjeta del Menú (ver
+         js/ficha.js). Es el mismo bloque que hay en index.html — cada
+         pantalla que quiera poder abrir la ficha necesita su propia copia
+         de este HTML (este proyecto no tiene una forma de compartir un
+         trozo de HTML entre archivos sin un build step), pero el
+         comportamiento lo maneja un solo archivo de JS. -->
+    <div class="ficha-overlay" id="ficha-overlay" hidden>
+      <div class="ficha-sheet" id="ficha-sheet" role="dialog" aria-modal="true" aria-labelledby="ficha-nombre">
+        <div class="ficha-scroll">
+          <div class="ficha-hero" id="ficha-hero">
+            <button type="button" class="ficha-close" id="ficha-cerrar" aria-label="Cerrar">✕</button>
+            <div class="ficha-cupwrap">
+              <img id="ficha-imagen" src="" alt="" loading="lazy" decoding="async" />
+            </div>
+          </div>
+          <div class="ficha-top">
+            <h3 id="ficha-nombre"></h3>
+            <span class="status" id="ficha-estado"><span class="dot"></span><span id="ficha-estado-texto"></span></span>
+          </div>
+          <div class="ficha-body">
+            <div class="field-label">Categoría</div>
+            <p class="ficha-desc" id="ficha-categoria"></p>
+
+            <div class="ficha-group" id="ficha-sabores-grupo" hidden>
+              <div class="ficha-group-label">
+                <span>Sabor</span>
+                <span class="ficha-group-hint" id="ficha-sabor-hint">Elige uno</span>
+              </div>
+              <div class="ficha-opt-row" id="ficha-opt-row" role="radiogroup" aria-label="Sabor"></div>
+            </div>
+          </div>
+        </div>
+        <div class="ficha-footer">
+          <div class="ficha-amt">
+            <span>Total</span>
+            <b id="ficha-precio">$0</b>
+          </div>
+          <button type="button" class="ficha-add-btn" id="ficha-agregar-btn">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
 
     <nav class="tabbar">
       <a href="index.html" data-tab="inicio">
@@ -84,6 +130,7 @@
   <script src="js/productos.js"></script>
   <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
+  <script src="js/ficha.js"></script>
   <script src="js/menu.js"></script>
 </body>
 </html>

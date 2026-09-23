@@ -52,8 +52,11 @@
         <div class="block-title">
           <h2>Más pedidos</h2>
         </div>
+        <!-- data-no-swipe: el carrusel ya tiene su propio scroll horizontal
+             táctil — sin esto, deslizar para ver más productos también
+             dispararía el cambio de pantalla (ver js/navegacion.js). -->
         <div class="carousel">
-          <div class="carousel-track" id="carousel-track"></div>
+          <div class="carousel-track" id="carousel-track" data-no-swipe></div>
         </div>
 
         <div class="block-title">
@@ -116,6 +119,45 @@
       </section>
     </main>
 
+    <!-- Ficha de producto: se abre al tocar una tarjeta del carrusel (ver
+         js/ficha.js). Mismo bloque que en menu.html — ver el comentario de
+         allá sobre por qué está repetido en cada .html. -->
+    <div class="ficha-overlay" id="ficha-overlay" hidden>
+      <div class="ficha-sheet" id="ficha-sheet" role="dialog" aria-modal="true" aria-labelledby="ficha-nombre">
+        <div class="ficha-scroll">
+          <div class="ficha-hero" id="ficha-hero">
+            <button type="button" class="ficha-close" id="ficha-cerrar" aria-label="Cerrar">✕</button>
+            <div class="ficha-cupwrap">
+              <img id="ficha-imagen" src="" alt="" loading="lazy" decoding="async" />
+            </div>
+          </div>
+          <div class="ficha-top">
+            <h3 id="ficha-nombre"></h3>
+            <span class="status" id="ficha-estado"><span class="dot"></span><span id="ficha-estado-texto"></span></span>
+          </div>
+          <div class="ficha-body">
+            <div class="field-label">Categoría</div>
+            <p class="ficha-desc" id="ficha-categoria"></p>
+
+            <div class="ficha-group" id="ficha-sabores-grupo" hidden>
+              <div class="ficha-group-label">
+                <span>Sabor</span>
+                <span class="ficha-group-hint" id="ficha-sabor-hint">Elige uno</span>
+              </div>
+              <div class="ficha-opt-row" id="ficha-opt-row" role="radiogroup" aria-label="Sabor"></div>
+            </div>
+          </div>
+        </div>
+        <div class="ficha-footer">
+          <div class="ficha-amt">
+            <span>Total</span>
+            <b id="ficha-precio">$0</b>
+          </div>
+          <button type="button" class="ficha-add-btn" id="ficha-agregar-btn">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+
     <nav class="tabbar">
       <a class="active" href="index.html" data-tab="inicio">
         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -143,7 +185,9 @@
 
   <script>window.PAGINA_ACTUAL = 'inicio';</script>
   <script src="js/productos.js"></script>
+  <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
+  <script src="js/ficha.js"></script>
   <script src="js/inicio.js"></script>
 </body>
 </html>

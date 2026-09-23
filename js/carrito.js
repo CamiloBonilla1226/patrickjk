@@ -44,8 +44,15 @@ function guardarCarritoEnStorage() {
 /**
  * Agrega un producto al carrito (o le suma 1 a la cantidad si ya estaba).
  * `producto` puede ser un producto de productos.js (con más campos) o
- * cualquier objeto que al menos tenga { id, nombre, precio } — solo esos
- * tres datos se guardan en el carrito.
+ * cualquier objeto que al menos tenga { id, nombre, precio }; si tiene
+ * `sabor`, esa fila del carrito queda ligada a ese sabor.
+ *
+ * Cada fila del carrito tiene su propio `id` (un identificador al azar,
+ * distinto del id del producto) — hace falta porque un mismo producto con
+ * dos sabores distintos ("Electrolit Uva" y "Electrolit Fresa Kiwi") deben
+ * quedar en DOS filas separadas del carrito, no fusionarse en una. El id
+ * del producto se guarda aparte, en `productId`, para poder identificar de
+ * qué producto se trata sin depender del id de la fila.
  */
 function agregarAlCarrito(producto) {
   if (producto.estado === 'agotado') {
@@ -53,18 +60,21 @@ function agregarAlCarrito(producto) {
     return;
   }
 
+  const sabor = producto.sabor || undefined;
   const itemExistente = itemsCarrito.find(function (item) {
-    return item.id === producto.id;
+    return item.productId === producto.id && item.sabor === sabor;
   });
 
   if (itemExistente) {
     itemExistente.cantidad += 1;
   } else {
     itemsCarrito.push({
-      id: producto.id,
+      id: crypto.randomUUID(),
+      productId: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
       cantidad: 1,
+      sabor: sabor,
     });
   }
 
@@ -73,8 +83,9 @@ function agregarAlCarrito(producto) {
 }
 
 /**
- * Resta 1 a la cantidad de un producto en el carrito. Si llega a 0, lo
- * elimina del arreglo por completo (no se queda una fila en "0").
+ * Resta 1 a la cantidad de una fila del carrito (identificada por el `id`
+ * de la fila, no el del producto). Si llega a 0, la elimina del arreglo
+ * por completo (no se queda una fila en "0").
  */
 function quitarDelCarrito(id) {
   const item = itemsCarrito.find(function (i) {
@@ -162,6 +173,8 @@ function crearFilaCartItem(item) {
   const fila = document.createElement('div');
   fila.className = 'cart-item';
 
+  const nombreConSabor = item.nombre + (item.sabor ? ' (' + item.sabor + ')' : '');
+
   fila.innerHTML =
     '<div class="row1">' +
       '<h3></h3>' +
@@ -170,13 +183,13 @@ function crearFilaCartItem(item) {
     '<div class="cart-item-row2">' +
       '<span class="cart-item-unit"></span>' +
       '<div class="qty-controls">' +
-        '<button type="button" class="qty-btn qty-minus" aria-label="Quitar una unidad de ' + item.nombre + '">−</button>' +
+        '<button type="button" class="qty-btn qty-minus" aria-label="Quitar una unidad de ' + nombreConSabor + '">−</button>' +
         '<span class="qty-value"></span>' +
-        '<button type="button" class="qty-btn qty-plus" aria-label="Agregar una unidad de ' + item.nombre + '">+</button>' +
+        '<button type="button" class="qty-btn qty-plus" aria-label="Agregar una unidad de ' + nombreConSabor + '">+</button>' +
       '</div>' +
     '</div>';
 
-  fila.querySelector('h3').textContent = item.nombre;
+  fila.querySelector('h3').textContent = nombreConSabor;
   fila.querySelector('.cart-item-subtotal').textContent = formatPrice(item.precio * item.cantidad);
   fila.querySelector('.cart-item-unit').textContent = formatPrice(item.precio) + ' c/u';
   fila.querySelector('.qty-value').textContent = item.cantidad;
@@ -186,9 +199,17 @@ function crearFilaCartItem(item) {
   });
   // El botón "+" de una fila que ya está en el carrito reutiliza
   // agregarAlCarrito con los mismos datos que ya tiene guardados el item
-  // (no necesita volver a consultar productos.js).
+  // (no necesita volver a consultar productos.js). item.productId || item.id
+  // es por compatibilidad con carritos guardados antes de que existiera el
+  // campo productId — si no está, el id de la fila ya hacía ese papel.
   fila.querySelector('.qty-plus').addEventListener('click', function () {
-    agregarAlCarrito({ id: item.id, nombre: item.nombre, precio: item.precio, estado: 'disponible' });
+    agregarAlCarrito({
+      id: item.productId || item.id,
+      nombre: item.nombre,
+      precio: item.precio,
+      estado: 'disponible',
+      sabor: item.sabor,
+    });
   });
 
   return fila;

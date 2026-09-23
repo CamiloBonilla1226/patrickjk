@@ -1,9 +1,10 @@
 // Lógica específica de la pantalla Menú: sub-tabs de categoría, buscador y
 // pintado de las tarjetas de producto.
 //
-// La ficha de producto (al tocar una tarjeta) sigue siendo solo visual por
-// ahora — esa lógica es una tarea aparte. El botón "+" sí agrega de verdad
-// al carrito (ver carrito.js).
+// Tocar una tarjeta abre la ficha del producto (ver ficha.js). El botón "+"
+// agrega directo al carrito (ver carrito.js) — salvo que el producto tenga
+// sabores para elegir, en cuyo caso también abre la ficha, porque no se
+// puede agregar sin que el cliente elija uno primero.
 
 var categoriaActiva = categorias[0];
 var busqueda = '';
@@ -51,6 +52,11 @@ function crearTarjetaProducto(producto) {
     '<div class="tapcue">›</div>';
   main.querySelector('h3').textContent = producto.nombre;
   main.querySelector('.contains').textContent = producto.categoria;
+  if (disponible) {
+    main.addEventListener('click', function () {
+      abrirFichaProducto(producto.id);
+    });
+  }
   card.appendChild(main);
 
   var quickAdd = document.createElement('button');
@@ -67,6 +73,12 @@ function crearTarjetaProducto(producto) {
   // (cargados antes que este archivo en menu.html) — ver esos archivos
   // para el detalle de cómo se guarda el carrito.
   quickAdd.addEventListener('click', function () {
+    // Si el producto tiene sabores, el "+" rápido no puede agregarlo
+    // directo: se abre la ficha para que el cliente elija uno primero.
+    if (producto.sabores && producto.sabores.length) {
+      abrirFichaProducto(producto.id);
+      return;
+    }
     agregarAlCarrito(producto);
     mostrarToast(producto.nombre + ' agregado al carrito');
   });
@@ -120,6 +132,29 @@ function seleccionarCategoria(categoria) {
     btn.classList.toggle('active', btn.dataset.categoria === categoria);
   });
   renderizarProductos();
+}
+
+/**
+ * Usadas por el swipe de pantalla (js/navegacion.js): mueven la categoría
+ * activa una posición adelante/atrás dentro de `categorias` y devuelven
+ * true si lo lograron. Si ya se está en la última/primera categoría,
+ * devuelven false para que quien llama sepa que debe cambiar de pantalla
+ * en su lugar (a Carrito o a Inicio).
+ */
+function avanzarCategoria() {
+  var indice = categorias.indexOf(categoriaActiva);
+  var siguiente = categorias[indice + 1];
+  if (!siguiente) return false;
+  seleccionarCategoria(siguiente);
+  return true;
+}
+
+function retrocederCategoria() {
+  var indice = categorias.indexOf(categoriaActiva);
+  var anterior = categorias[indice - 1];
+  if (!anterior) return false;
+  seleccionarCategoria(anterior);
+  return true;
 }
 
 function pintarSubtabs() {

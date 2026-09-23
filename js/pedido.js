@@ -48,8 +48,9 @@ function construirMensajePedido(datosEntrega, itemsCarrito, subtotal) {
 
   itemsCarrito.forEach(function (item) {
     const subtotalLinea = item.precio * item.cantidad;
+    const nombreConSabor = item.nombre + (item.sabor ? ' (' + item.sabor + ')' : '');
     lineas.push(
-      '- ' + item.cantidad + 'x ' + item.nombre +
+      '- ' + item.cantidad + 'x ' + nombreConSabor +
       ' — ' + formatPrice(item.precio) + ' c/u = ' + formatPrice(subtotalLinea)
     );
   });
