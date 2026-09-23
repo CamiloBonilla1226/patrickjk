@@ -605,7 +605,7 @@ main {
   border-color: var(--border);
 }
 
-/* ================= CARRITO (esqueleto vacío) ================= */
+/* ================= CARRITO ================= */
 .cart-empty {
   text-align: center;
   padding: 60px 20px;
@@ -620,4 +620,202 @@ main {
 .cart-empty p {
   font-size: 13px;
   line-height: 1.6;
+}
+
+.cart-item {
+  border: 1px solid var(--border);
+  background: var(--navy-2);
+  padding: 12px;
+  margin-bottom: 9px;
+}
+.cart-item .row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cart-item h3 {
+  font-family: 'Work Sans';
+  font-weight: 800;
+  font-size: 13.5px;
+}
+.cart-item-subtotal {
+  flex: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+.cart-item-row2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cart-item-unit {
+  font-size: 11px;
+  color: var(--cream-dim);
+}
+.qty-controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.qty-btn {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  cursor: pointer;
+  background: var(--navy);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  color: var(--amber);
+  font-size: 15px;
+  line-height: 1;
+}
+.qty-btn:hover {
+  border-color: var(--amber);
+}
+.qty-value {
+  min-width: 16px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-strong);
+}
+.cart-total span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--cream-dim);
+}
+.cart-total b {
+  font-size: 19px;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-vaciar-btn {
+  margin-top: 16px;
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--cream-dim);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  padding: 12px 10px;
+}
+.cart-vaciar-btn:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.cart-continuar-btn {
+  margin-top: 10px;
+  width: 100%;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Fraunces';
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--ink-on-accent);
+  background: var(--amber);
+  padding: 14px 10px;
+}
+.cart-continuar-btn:disabled {
+  cursor: not-allowed;
+  color: var(--cream-dim);
+  background: var(--navy-2);
+}
+
+/* ================= MODAL DE CONFIRMACIÓN (vaciar carrito) ================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--navy) 75%, transparent);
+}
+.modal-box {
+  width: 100%;
+  max-width: 340px;
+  background: var(--navy-2);
+  border: 1px solid var(--border-strong);
+  padding: 18px;
+}
+.modal-box p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cream);
+  margin-bottom: 16px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+.modal-btn-secundario,
+.modal-btn-principal {
+  flex: 1;
+  appearance: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 11px 8px;
+  border: 1px solid var(--border-strong);
+}
+.modal-btn-secundario {
+  background: transparent;
+  color: var(--cream);
+}
+.modal-btn-principal {
+  background: var(--amber);
+  color: var(--ink-on-accent);
+  border-color: var(--amber);
+}
+
+/* ================= TOAST (confirmación breve, sin alert()) ================= */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(8px);
+  z-index: 60;
+  width: calc(100% - 32px);
+  max-width: 380px;
+  background: var(--navy-2);
+  border: 1px solid var(--amber);
+  color: var(--cream);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

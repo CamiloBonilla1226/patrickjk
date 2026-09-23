@@ -1,13 +1,11 @@
 // Lógica específica de la pantalla Menú: sub-tabs de categoría, buscador y
 // pintado de las tarjetas de producto.
 //
-// La ficha de producto (al tocar una tarjeta) y el botón "+" para agregar al
-// carrito son solo visuales por ahora — esa lógica se implementa en una
-// tarea aparte, cuando exista el carrito.
+// La ficha de producto (al tocar una tarjeta) sigue siendo solo visual por
+// ahora — esa lógica es una tarea aparte. El botón "+" sí agrega de verdad
+// al carrito (ver carrito.js).
 
-var SEARCH_MAX_LENGTH = 60;
-
-var categoriaActiva = CATEGORIES[0];
+var categoriaActiva = categorias[0];
 var busqueda = '';
 
 // Quita tildes/acentos y pasa a minúsculas, para comparar texto sin que
@@ -65,6 +63,13 @@ function crearTarjetaProducto(producto) {
     '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
       '<path d="M12 5v14M5 12h14" />' +
     '</svg>';
+  // agregarAlCarrito y mostrarToast viven en carrito.js y navegacion.js
+  // (cargados antes que este archivo en menu.html) — ver esos archivos
+  // para el detalle de cómo se guarda el carrito.
+  quickAdd.addEventListener('click', function () {
+    agregarAlCarrito(producto);
+    mostrarToast(producto.nombre + ' agregado al carrito');
+  });
   card.appendChild(quickAdd);
 
   return card;
@@ -76,7 +81,7 @@ function renderizarProductos() {
   if (!panel || !contador) return;
 
   var buscando = busqueda.trim().length > 0;
-  var productosBase = buscando ? PRODUCTS : PRODUCTS.filter(function (p) {
+  var productosBase = buscando ? productos : productos.filter(function (p) {
     return p.categoria === categoriaActiva;
   });
   var visibles = productosBase.filter(function (p) {
@@ -120,7 +125,7 @@ function seleccionarCategoria(categoria) {
 function pintarSubtabs() {
   var contenedor = document.getElementById('subtabs');
   if (!contenedor) return;
-  CATEGORIES.forEach(function (categoria) {
+  categorias.forEach(function (categoria) {
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.dataset.categoria = categoria;
@@ -136,7 +141,7 @@ function pintarSubtabs() {
 document.addEventListener('DOMContentLoaded', function () {
   var params = new URLSearchParams(window.location.search);
   var categoriaSolicitada = params.get('categoria');
-  if (categoriaSolicitada && CATEGORIES.indexOf(categoriaSolicitada) !== -1) {
+  if (categoriaSolicitada && categorias.indexOf(categoriaSolicitada) !== -1) {
     categoriaActiva = categoriaSolicitada;
   }
 

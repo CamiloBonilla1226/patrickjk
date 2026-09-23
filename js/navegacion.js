@@ -46,6 +46,33 @@ function marcarTabActiva() {
   });
 }
 
+// ---- Toast de confirmación ----
+// Mensaje pequeño que aparece un par de segundos y desaparece solo, para
+// confirmar una acción (como "agregado al carrito") sin usar alert(), que
+// bloquea toda la página hasta que el cliente le da clic a "Aceptar".
+var idTimeoutToast = null;
+
+function mostrarToast(mensaje) {
+  var toast = document.getElementById('toast');
+  // El toast se crea la primera vez que se necesita, en vez de tenerlo
+  // repetido en cada .html — así solo existe en las páginas que de verdad
+  // lo usan.
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.querySelector('.app').appendChild(toast);
+  }
+
+  toast.textContent = mensaje;
+  toast.classList.add('toast-visible');
+
+  clearTimeout(idTimeoutToast);
+  idTimeoutToast = setTimeout(function () {
+    toast.classList.remove('toast-visible');
+  }, 1600);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   pintarEstadoAbierto();
   marcarTabActiva();

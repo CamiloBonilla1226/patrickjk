@@ -1,7 +1,10 @@
-// Datos de ejemplo — reemplazar por una fuente de datos real cuando exista
-// backend. Mismo catálogo que el proyecto React, adaptado a JS plano
-// (sin módulos ES, para poder abrir los .html directo con file:// o con
-// cualquier servidor estático simple).
+// Datos de ejemplo — reemplazar por una fuente de datos real (backend) más
+// adelante. Mismo catálogo que el proyecto en React (mismos ids, nombres,
+// precios, categorías y estados), solo que aquí es un arreglo plano cargado
+// directo con una etiqueta <script>, en vez de un "import" — este proyecto
+// no usa módulos ES ni build step, así que cualquier archivo .js que se
+// cargue antes en el HTML deja sus variables disponibles para los que
+// vienen después (por eso el orden de los <script> en cada .html importa).
 //
 // Forma de cada producto:
 // {
@@ -10,11 +13,11 @@
 //   precio: number,
 //   categoria: string,
 //   estado: 'disponible' | 'agotado',
-//   sabores: string[] (opcional — si existe, el cliente debe elegir uno),
-//   imagen: string (ruta relativa a la carpeta productos/)
+//   sabores: string[] (opcional — si existe, el cliente debe elegir uno; no se usa todavía),
+//   imagen: string (ruta relativa a la carpeta productos/, usada por el Menú y el Inicio)
 // }
 
-var PRODUCTS = [
+const productos = [
   // Cervezas — six packs
   { id: 'cerveza-sixpack-poker', nombre: 'Six Pack Poker', precio: 30000, categoria: 'Cervezas', estado: 'disponible', imagen: 'productos/cerveza-sixpack-poker.webp' },
   { id: 'cerveza-sixpack-aguila-light', nombre: 'Six Pack Águila Light', precio: 30000, categoria: 'Cervezas', estado: 'disponible', imagen: 'productos/cerveza-sixpack-aguila-light.webp' },
@@ -97,10 +100,12 @@ var PRODUCTS = [
 
 // Categorías derivadas del catálogo (en el orden en que aparecen), para no
 // mantener una lista aparte que se pueda desincronizar de los productos.
-var CATEGORIES = PRODUCTS.reduce(function (acc, p) {
-  if (acc.indexOf(p.categoria) === -1) acc.push(p.categoria);
-  return acc;
-}, []);
+const categorias = [];
+productos.forEach(function (producto) {
+  if (categorias.indexOf(producto.categoria) === -1) {
+    categorias.push(producto.categoria);
+  }
+});
 
 // Formato de precio compartido por todas las pantallas que muestran precios.
 function formatPrice(precio) {

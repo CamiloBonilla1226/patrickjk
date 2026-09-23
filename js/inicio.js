@@ -52,7 +52,7 @@ function crearTarjetaCarrusel(producto) {
 function pintarCarrusel() {
   var track = document.getElementById('carousel-track');
   if (!track) return;
-  var destacados = PRODUCTS.filter(function (p) {
+  var destacados = productos.filter(function (p) {
     return p.estado === 'disponible';
   }).slice(0, FEATURED_COUNT);
 
@@ -64,12 +64,12 @@ function pintarCarrusel() {
 function pintarCategorias() {
   var grid = document.getElementById('cat-grid');
   if (!grid) return;
-  var categorias = CATEGORIES.filter(function (c) {
+  var categoriasDestacadas = categorias.filter(function (c) {
     return c !== 'Bebidas';
   });
 
-  categorias.forEach(function (categoria) {
-    var count = PRODUCTS.filter(function (p) {
+  categoriasDestacadas.forEach(function (categoria) {
+    var count = productos.filter(function (p) {
       return p.categoria === categoria;
     }).length;
 

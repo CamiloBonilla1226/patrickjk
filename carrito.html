@@ -23,10 +23,9 @@
     </header>
 
     <main>
-      <!-- Por ahora solo el esqueleto visual del Carrito: el estado vacío.
-           Agregar/quitar productos, el comentario, la ruleta y el envío por
-           WhatsApp se implementan en tareas aparte, cuando exista el
-           carrito. -->
+      <!-- El formulario de entrega, la ruleta y el envío por WhatsApp son
+           tareas aparte — por eso "Continuar pedido" más abajo no hace
+           nada todavía. -->
       <section class="screen" id="tab-carrito">
         <div class="sec-head">
           <div>
@@ -36,7 +35,10 @@
           <img class="sec-head-logo" src="imagenes/logo-optimized.png" alt="Patrick's JK" />
         </div>
 
-        <div class="cart-empty">
+        <!-- Uno de estos dos bloques se muestra y el otro se oculta
+             (con el atributo "hidden") según si hay o no productos —
+             lo decide renderizarCarrito() en js/carrito.js. -->
+        <div class="cart-empty" id="carrito-vacio">
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6" />
             <circle cx="9" cy="20" r="1.4" />
@@ -44,8 +46,38 @@
           </svg>
           <p>Tu carrito está vacío.<br />Agrega productos desde el Menú para armar tu pedido.</p>
         </div>
+
+        <div id="carrito-contenido" hidden>
+          <div id="carrito-lista"></div>
+
+          <div class="cart-total">
+            <span>Total</span>
+            <b id="carrito-total">$0</b>
+          </div>
+
+          <button type="button" id="btn-vaciar-carrito" class="cart-vaciar-btn">
+            Vaciar carrito
+          </button>
+
+          <button type="button" id="btn-continuar" class="cart-continuar-btn" disabled>
+            Continuar pedido (próximamente)
+          </button>
+        </div>
       </section>
     </main>
+
+    <!-- Modal casero de confirmación para vaciar el carrito (no usa
+         confirm() del navegador, que se ve feo y bloquea la página). Está
+         oculto por defecto con "hidden" y js/carrito.js lo muestra/oculta. -->
+    <div class="modal-backdrop" id="modal-vaciar" hidden>
+      <div class="modal-box" role="dialog" aria-modal="true" aria-label="Confirmar vaciar carrito">
+        <p>¿Vaciar todo el carrito? Esta acción no se puede deshacer.</p>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancelar" class="modal-btn-secundario">Cancelar</button>
+          <button type="button" id="modal-confirmar" class="modal-btn-principal">Sí, vaciar</button>
+        </div>
+      </div>
+    </div>
 
     <nav class="tabbar">
       <a href="index.html" data-tab="inicio">
@@ -73,6 +105,7 @@
   </div>
 
   <script>window.PAGINA_ACTUAL = 'carrito';</script>
+  <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
 </body>
 </html>
