@@ -122,10 +122,20 @@ async function cargarOfertas() {
 }
 
 async function alternarOferta(id, nuevaActiva) {
-  const { error } = await supabase.from('ofertas').update({ activa: nuevaActiva }).eq('id', id);
+  // El ".select()" al final es lo que permite detectar el caso raro pero
+  // real de RLS: si una política de Supabase bloquea la fila, el update NO
+  // da error — simplemente actualiza 0 filas en silencio. Sin pedir de
+  // vuelta la fila actualizada, no había forma de distinguir "sí funcionó"
+  // de "RLS lo bloqueó calladito".
+  const { data, error } = await supabase.from('ofertas').update({ activa: nuevaActiva }).eq('id', id).select();
+
   if (error) {
     console.error('No se pudo actualizar la oferta:', error);
     mostrarMensaje('No se pudo actualizar la oferta. Revisa la consola.', true);
+    return;
+  }
+  if (!data || data.length === 0) {
+    mostrarMensaje('Supabase no dejó actualizar esta oferta — revisa que exista la política de UPDATE en la tabla ofertas.', true);
     return;
   }
   cargarOfertas();
@@ -135,10 +145,15 @@ async function borrarOferta(id, titulo) {
   const confirmado = window.confirm('¿Borrar la oferta "' + titulo + '"? Esta acción no se puede deshacer.');
   if (!confirmado) return;
 
-  const { error } = await supabase.from('ofertas').delete().eq('id', id);
+  const { data, error } = await supabase.from('ofertas').delete().eq('id', id).select();
+
   if (error) {
     console.error('No se pudo borrar la oferta:', error);
     mostrarMensaje('No se pudo borrar la oferta. Revisa la consola.', true);
+    return;
+  }
+  if (!data || data.length === 0) {
+    mostrarMensaje('Supabase no dejó borrar esta oferta — revisa que exista la política de DELETE en la tabla ofertas.', true);
     return;
   }
   cargarOfertas();
@@ -183,8 +198,8 @@ function crearFilaPedido(pedido) {
 
   fila.querySelector('h3').textContent = pedido.nombre || '(sin nombre)';
   fila.querySelector('.pedido-meta').textContent = (pedido.celular || '') + ' · ' + (pedido.direccion || '');
-  fila.querySelector('.pedido-fecha').textContent = formatearFecha(pedido.created_at || pedido.creado_en);
-  fila.querySelector('.pedido-total b').textContent = formatPrice(pedido.subtotal || 0);
+  fila.querySelector('.pedido-fecha').textContent = formatearFecha(pedido.created_at || pedido.creado_en || pedido.fecha);
+  fila.querySelector('.pedido-total b').textContent = formatPrice(pedido.subtotal || pedido.total || 0);
 
   if (pedido.codigo_premio) {
     const premioEl = fila.querySelector('.pedido-premio');
@@ -220,7 +235,12 @@ async function cargarPedidos() {
   cargando.hidden = false;
   vacio.hidden = true;
 
-  const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
+  // Sin .order() a propósito: no sabemos con certeza el nombre exacto de
+  // la columna de fecha en tu tabla `pedidos` (created_at, creado_en...) —
+  // pedir que ordene por una columna que no existe hace fallar TODA la
+  // consulta. Se trae todo sin ordenar y se ordena aquí mismo, probando
+  // los nombres más probables (ver formatearFecha más abajo).
+  const { data, error } = await supabase.from('pedidos').select('*');
 
   cargando.hidden = true;
 
@@ -235,16 +255,28 @@ async function cargarPedidos() {
     vacio.hidden = false;
     return;
   }
-  data.forEach(function (pedido) {
+
+  const ordenados = data.slice().sort(function (a, b) {
+    const fechaA = a.created_at || a.creado_en || a.fecha || '';
+    const fechaB = b.created_at || b.creado_en || b.fecha || '';
+    return fechaB < fechaA ? -1 : fechaB > fechaA ? 1 : 0;
+  });
+
+  ordenados.forEach(function (pedido) {
     lista.appendChild(crearFilaPedido(pedido));
   });
 }
 
 async function alternarConfirmacionPedido(id, nuevoConfirmado) {
-  const { error } = await supabase.from('pedidos').update({ confirmado: nuevoConfirmado }).eq('id', id);
+  const { data, error } = await supabase.from('pedidos').update({ confirmado: nuevoConfirmado }).eq('id', id).select();
+
   if (error) {
     console.error('No se pudo actualizar el pedido:', error);
     mostrarMensaje('No se pudo actualizar el pedido. Revisa la consola.', true);
+    return;
+  }
+  if (!data || data.length === 0) {
+    mostrarMensaje('Supabase no dejó actualizar este pedido — revisa que exista la política de UPDATE en la tabla pedidos.', true);
     return;
   }
   cargarPedidos();
