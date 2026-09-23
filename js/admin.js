@@ -51,6 +51,7 @@ function crearFilaOferta(oferta) {
       '<p></p>' +
     '</div>' +
     '<div class="admin-oferta-acciones">' +
+      '<button type="button" class="admin-destacar-btn">★ Destacar en Inicio</button>' +
       '<button type="button" class="admin-activar-btn">Activar</button>' +
       '<button type="button" class="admin-desactivar-btn">Desactivar</button>' +
       '<button type="button" class="admin-borrar-btn" aria-label="Borrar oferta">' +
@@ -61,7 +62,8 @@ function crearFilaOferta(oferta) {
       '</button>' +
     '</div>';
 
-  fila.querySelector('h3').textContent = oferta.titulo + (esRuleta ? ' 🎡' : '');
+  fila.querySelector('h3').textContent =
+    (oferta.destacada ? '★ ' : '') + oferta.titulo + (esRuleta ? ' 🎡' : '');
   const descripcionEl = fila.querySelector('p');
   if (oferta.descripcion) {
     descripcionEl.textContent = oferta.descripcion;
@@ -81,11 +83,21 @@ function crearFilaOferta(oferta) {
   });
 
   const botonBorrar = fila.querySelector('.admin-borrar-btn');
+  const botonDestacar = fila.querySelector('.admin-destacar-btn');
+
   if (esRuleta) {
+    // La ruleta ya tiene su propio banner en Inicio — no tiene sentido que
+    // además compita por ser "la oferta destacada" genérica.
+    botonDestacar.remove();
     botonBorrar.disabled = true;
     botonBorrar.setAttribute('aria-label', 'La oferta de la ruleta no se puede borrar');
     botonBorrar.title = 'La ruleta no se puede borrar — solo activar o desactivar';
   } else {
+    botonDestacar.disabled = oferta.destacada === true;
+    botonDestacar.textContent = oferta.destacada ? '★ Destacada' : 'Destacar en Inicio';
+    botonDestacar.addEventListener('click', function () {
+      destacarOferta(oferta.id);
+    });
     botonBorrar.addEventListener('click', function () {
       borrarOferta(oferta.id, oferta.titulo);
     });
@@ -101,7 +113,7 @@ async function cargarOfertas() {
 
   const { data, error } = await supabase
     .from('ofertas')
-    .select('id, titulo, descripcion, activa, codigo')
+    .select('id, titulo, descripcion, activa, codigo, destacada')
     .order('creado_en', { ascending: false });
 
   if (error) {
@@ -136,6 +148,34 @@ async function alternarOferta(id, nuevaActiva) {
   }
   if (!data || data.length === 0) {
     mostrarMensaje('Supabase no dejó actualizar esta oferta — revisa que exista la política de UPDATE en la tabla ofertas.', true);
+    return;
+  }
+  cargarOfertas();
+}
+
+/**
+ * Marca esta oferta como la destacada de Inicio. Solo puede haber una a la
+ * vez, así que primero se les quita el destacado a todas las demás y
+ * después se enciende esta — dos pasos porque es más simple de leer que
+ * armar una sola consulta condicional, y aquí no hay tantas ofertas como
+ * para que la diferencia de rendimiento importe.
+ */
+async function destacarOferta(id) {
+  const { error: errorLimpiar } = await supabase.from('ofertas').update({ destacada: false }).neq('id', id);
+  if (errorLimpiar) {
+    console.error('No se pudo quitar el destacado de las demás ofertas:', errorLimpiar);
+    mostrarMensaje('No se pudo destacar la oferta. Revisa la consola.', true);
+    return;
+  }
+
+  const { data, error } = await supabase.from('ofertas').update({ destacada: true }).eq('id', id).select();
+  if (error) {
+    console.error('No se pudo destacar la oferta:', error);
+    mostrarMensaje('No se pudo destacar la oferta. Revisa la consola.', true);
+    return;
+  }
+  if (!data || data.length === 0) {
+    mostrarMensaje('Supabase no dejó destacar esta oferta — revisa que exista la política de UPDATE en la tabla ofertas.', true);
     return;
   }
   cargarOfertas();
@@ -194,6 +234,12 @@ function crearFilaPedido(pedido) {
     '<div class="pedido-acciones">' +
       '<button type="button" class="admin-desactivar-btn pedido-confirmar-btn">Confirmar pedido</button>' +
       '<button type="button" class="admin-activar-btn pedido-pendiente-btn">Marcar pendiente</button>' +
+      '<button type="button" class="admin-borrar-btn pedido-borrar-btn" aria-label="Borrar pedido">' +
+        '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
+          '<path d="M4 7h16" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />' +
+          '<path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" /><path d="M10 11v6M14 11v6" />' +
+        '</svg>' +
+      '</button>' +
     '</div>';
 
   fila.querySelector('h3').textContent = pedido.nombre || '(sin nombre)';
@@ -221,6 +267,10 @@ function crearFilaPedido(pedido) {
   });
   botonPendiente.addEventListener('click', function () {
     alternarConfirmacionPedido(pedido.id, false);
+  });
+
+  fila.querySelector('.pedido-borrar-btn').addEventListener('click', function () {
+    borrarPedido(pedido.id, pedido.nombre || '(sin nombre)');
   });
 
   return fila;
@@ -277,6 +327,25 @@ async function alternarConfirmacionPedido(id, nuevoConfirmado) {
   }
   if (!data || data.length === 0) {
     mostrarMensaje('Supabase no dejó actualizar este pedido — revisa que exista la política de UPDATE en la tabla pedidos.', true);
+    return;
+  }
+  cargarPedidos();
+}
+
+/** Borra el pedido de verdad de la tabla `pedidos` — no es un estado, desaparece por completo. */
+async function borrarPedido(id, nombre) {
+  const confirmado = window.confirm('¿Borrar el pedido de "' + nombre + '"? Esta acción no se puede deshacer.');
+  if (!confirmado) return;
+
+  const { data, error } = await supabase.from('pedidos').delete().eq('id', id).select();
+
+  if (error) {
+    console.error('No se pudo borrar el pedido:', error);
+    mostrarMensaje('No se pudo borrar el pedido. Revisa la consola.', true);
+    return;
+  }
+  if (!data || data.length === 0) {
+    mostrarMensaje('Supabase no dejó borrar este pedido — revisa que exista la política de DELETE en la tabla pedidos.', true);
     return;
   }
   cargarPedidos();

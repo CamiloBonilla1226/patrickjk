@@ -50,12 +50,20 @@ async function manejarEnvioFormulario(e) {
   const subtotal = calcularSubtotal();
   const codigoPremio = obtenerCodigoPremioCarrito();
 
-  // Se intenta guardar el pedido en Supabase (tabla `pedidos`) ANTES de
-  // abrir WhatsApp, pero sin dejar que un fallo ahí bloquee el envío del
-  // pedido — eso es lo prioritario para el cliente. guardarPedidoSupabase
-  // (definida en ruleta.js, expuesta en window) ya maneja sus propios
-  // errores con console.error; este try/catch es una red de seguridad
-  // extra por si el módulo no llegó a cargar a tiempo.
+  // IMPORTANTE: abrir WhatsApp es lo PRIMERO que se hace, todavía en el
+  // mismo instante del clic — los navegadores bloquean window.open() (sin
+  // avisar con ningún error) si no ocurre de inmediato en respuesta a la
+  // interacción del cliente. Si esto fuera después de un `await` (como
+  // guardar en Supabase), el navegador ya no lo cuenta como "resultado
+  // directo del clic" y la ventana simplemente no se abre.
+  abrirWhatsAppConPedido(datosEntrega, items, subtotal);
+
+  // El guardado en Supabase (tabla `pedidos`) pasa DESPUÉS, sin bloquear
+  // nada — si falla, el pedido por WhatsApp ya se envió de todos modos,
+  // que es lo prioritario. guardarPedidoSupabase (definida en ruleta.js,
+  // expuesta en window) ya maneja sus propios errores con console.error;
+  // este try/catch es una red de seguridad extra por si el módulo no
+  // llegó a cargar a tiempo.
   if (typeof guardarPedidoSupabase === 'function') {
     try {
       await guardarPedidoSupabase({
@@ -70,8 +78,6 @@ async function manejarEnvioFormulario(e) {
       console.error('No se pudo guardar el pedido en Supabase:', error);
     }
   }
-
-  abrirWhatsAppConPedido(datosEntrega, items, subtotal);
 
   // El pedido ya se mandó por WhatsApp — el carrito de esta compra queda
   // vacío (también se borra el código de premio, si había uno) y se vuelve

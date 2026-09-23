@@ -46,6 +46,21 @@
           </div>
         </div>
 
+        <!-- Oculta por defecto: js/ofertas.js (cargarOfertaDestacada) la
+             muestra solo si hay al menos una oferta activa — primero la
+             que el admin marcó como destacada, si no eligió ninguna usa la
+             oferta activa más antigua como respaldo. -->
+        <div class="oferta-card" id="oferta-destacada" hidden>
+          <svg class="ico oferta-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M20.6 12.3 12.7 20.2a1.5 1.5 0 0 1-2.1 0L3.8 13.4a1.5 1.5 0 0 1 0-2.1l7.9-7.9c.3-.3.7-.5 1.1-.5h6a1.5 1.5 0 0 1 1.5 1.5v6c0 .4-.2.8-.5 1.1Z" />
+            <circle cx="15.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
+          </svg>
+          <div class="oferta-texto">
+            <h3 class="oferta-destacada-titulo"></h3>
+            <p class="oferta-destacada-desc" hidden></p>
+          </div>
+        </div>
+
         <div class="sec-head">
           <h1>¿Qué te vas a tomar hoy?</h1>
         </div>
@@ -196,9 +211,11 @@
   <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
   <script src="js/ficha.js"></script>
-  <!-- Solo se necesita aquí por ruletaEstaActiva (ver js/inicio.js) — ver
-       el comentario al inicio de js/ruleta.js sobre por qué es un módulo. -->
+  <!-- Solo se necesitan aquí por ruletaEstaActiva y cargarOfertaDestacada
+       (ver js/inicio.js) — ver el comentario al inicio de js/ruleta.js
+       sobre por qué son módulos. -->
   <script type="module" src="js/ruleta.js"></script>
+  <script type="module" src="js/ofertas.js"></script>
   <script src="js/inicio.js"></script>
 </body>
 </html>

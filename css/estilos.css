@@ -509,6 +509,12 @@ main {
   padding: 14px;
   margin-bottom: 10px;
 }
+/* Recordatorio de siempre: sin esto, "hidden" no oculta nada porque
+   .oferta-card ya fija su propio "display" (ver el mismo caso arriba en
+   .modal-backdrop y .roulette-banner). */
+.oferta-card[hidden] {
+  display: none;
+}
 .oferta-ico {
   flex: none;
   width: 22px;
@@ -570,6 +576,7 @@ main {
   gap: 6px;
   flex-wrap: wrap;
 }
+.admin-destacar-btn,
 .admin-activar-btn,
 .admin-desactivar-btn {
   appearance: none;
@@ -580,6 +587,15 @@ main {
   border: 1px solid var(--border-strong);
   background: transparent;
   color: var(--cream-dim);
+}
+.admin-destacar-btn:not(:disabled):hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.admin-destacar-btn:disabled {
+  cursor: default;
+  border-color: var(--amber);
+  color: var(--amber);
 }
 .admin-activar-btn:not(:disabled) {
   border-color: var(--teal);
@@ -704,7 +720,8 @@ main {
   display: flex;
   gap: 8px;
 }
-.pedido-acciones button {
+.pedido-acciones .pedido-confirmar-btn,
+.pedido-acciones .pedido-pendiente-btn {
   flex: 1;
   padding: 9px 8px;
 }
