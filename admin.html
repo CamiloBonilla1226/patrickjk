@@ -61,8 +61,19 @@
 
         <!-- ---- Sección Pedidos ---- -->
         <div id="admin-seccion-pedidos" hidden>
+          <!-- "semana" es el filtro por defecto (ver FILTRO_PEDIDOS_INICIAL
+               en admin.js) — con muchos pedidos, listarlos TODOS de una vez
+               es lento y poco útil; el admin puede ampliar a mes o todos si
+               de verdad los necesita. -->
+          <div class="subtabs" id="admin-pedidos-filtros">
+            <button type="button" data-filtro="hoy">Hoy</button>
+            <button type="button" class="active" data-filtro="semana">Semana</button>
+            <button type="button" data-filtro="mes">Mes</button>
+            <button type="button" data-filtro="todos">Todos</button>
+          </div>
+
           <p id="admin-pedidos-cargando" class="ofertas-cargando">Cargando pedidos...</p>
-          <p id="admin-pedidos-vacio" class="ofertas-vacio" hidden>Todavía no hay pedidos.</p>
+          <p id="admin-pedidos-vacio" class="ofertas-vacio" hidden>No hay pedidos en este rango de fechas.</p>
           <div id="admin-pedidos-lista"></div>
         </div>
       </section>

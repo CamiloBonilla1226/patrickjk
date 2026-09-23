@@ -20,6 +20,27 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // todo el sitio, no solo "sin mostrarse".
 const CODIGO_RULETA = 'ruleta';
 
+// Con el tiempo la tabla `pedidos` puede acumular muchísimas filas — listar
+// TODAS de una vez cada vez que se abre el panel es lento y poco útil, así
+// que por defecto solo se piden los de la última semana. "hoy" es la
+// medianoche de hoy en la hora del navegador; "semana" y "mes" son 7 y 30
+// días atrás desde este momento.
+let filtroPedidosActual = 'semana';
+
+function calcularFechaDesdeFiltro(filtro) {
+  const ahora = new Date();
+  if (filtro === 'hoy') {
+    return new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+  }
+  if (filtro === 'semana') {
+    return new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
+  }
+  if (filtro === 'mes') {
+    return new Date(ahora.getTime() - 30 * 24 * 60 * 60 * 1000);
+  }
+  return null; // 'todos' — sin filtro de fecha
+}
+
 // ============================================================
 // Cambiar entre "Ofertas" y "Pedidos"
 // ============================================================
@@ -335,8 +356,14 @@ async function cargarPedidos() {
   // la columna de fecha en tu tabla `pedidos` (created_at, creado_en...) —
   // pedir que ordene por una columna que no existe hace fallar TODA la
   // consulta. Se trae todo sin ordenar y se ordena aquí mismo, probando
-  // los nombres más probables (ver formatearFecha más abajo).
-  const { data, error } = await supabase.from('pedidos').select('*');
+  // los nombres más probables (ver formatearFecha más abajo). El filtro de
+  // fecha sí se manda al servidor (con .gte), para no traer de más.
+  let consulta = supabase.from('pedidos').select('*');
+  const desde = calcularFechaDesdeFiltro(filtroPedidosActual);
+  if (desde) {
+    consulta = consulta.gte('creado_en', desde.toISOString());
+  }
+  const { data, error } = await consulta;
 
   cargando.hidden = true;
 
@@ -348,6 +375,9 @@ async function cargarPedidos() {
 
   lista.innerHTML = '';
   if (!data || data.length === 0) {
+    vacio.textContent = filtroPedidosActual === 'todos'
+      ? 'Todavía no hay pedidos.'
+      : 'No hay pedidos en este rango de fechas.';
     vacio.hidden = false;
     return;
   }
@@ -464,6 +494,17 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('#admin-subtabs button').forEach(function (btn) {
     btn.addEventListener('click', function () {
       cambiarSeccion(btn.dataset.seccion);
+    });
+  });
+
+  document.querySelectorAll('#admin-pedidos-filtros button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.dataset.filtro === filtroPedidosActual) return;
+      filtroPedidosActual = btn.dataset.filtro;
+      document.querySelectorAll('#admin-pedidos-filtros button').forEach(function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      cargarPedidos();
     });
   });
 
