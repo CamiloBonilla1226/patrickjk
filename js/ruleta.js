@@ -85,9 +85,32 @@ export async function verificarSiYaJugo() {
   return yaJugo;
 }
 
-/** Un carrito es elegible a la ruleta si su subtotal alcanza el mínimo Y el dispositivo no ha jugado antes. */
+/**
+ * La ruleta en sí es una "oferta" más en la tabla `ofertas` (con el código
+ * fijo 'ruleta', para distinguirla de las ofertas normales que el admin
+ * crea desde admin.html) — el admin la activa o desactiva desde ahí, igual
+ * que cualquier otra oferta. Si esa fila no existe o Supabase falla, se
+ * asume APAGADA (lo contrario de verificarSiYaJugo arriba): esto no es un
+ * control de abuso, es una promoción que el dueño del negocio prende o
+ * apaga a propósito, así que por defecto se respeta "apagada" en vez de
+ * arriesgarse a mostrar una promo que el admin ya quitó.
+ */
+export async function ruletaEstaActiva() {
+  const { data, error } = await supabase.from('ofertas').select('activa').eq('codigo', 'ruleta').maybeSingle();
+
+  if (error) {
+    console.error('No se pudo verificar si la promoción de la ruleta está activa:', error);
+    return false;
+  }
+  if (!data) return false;
+  return data.activa === true;
+}
+
+/** Un carrito es elegible a la ruleta si su subtotal alcanza el mínimo, la promoción está activa Y el dispositivo no ha jugado antes. */
 export async function deviceEsElegibleParaRuleta(subtotal) {
   if (subtotal < RULETA_MIN_SUBTOTAL) return false;
+  const activa = await ruletaEstaActiva();
+  if (!activa) return false;
   const yaJugo = await verificarSiYaJugo();
   return !yaJugo;
 }
@@ -460,9 +483,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ============================================================
-// Exponer a window lo que necesitan carrito.js y entrega.js (scripts
-// normales, no módulos) — ver el comentario al inicio del archivo.
+// Exponer a window lo que necesitan carrito.js, entrega.js e inicio.js
+// (scripts normales, no módulos) — ver el comentario al inicio del archivo.
 // ============================================================
 window.deviceEsElegibleParaRuleta = deviceEsElegibleParaRuleta;
+window.ruletaEstaActiva = ruletaEstaActiva;
 window.abrirRuleta = abrirRuleta;
 window.guardarPedidoSupabase = guardarPedidoSupabase;

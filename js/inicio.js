@@ -105,8 +105,25 @@ function avisarSiVieneDeUnPedido() {
   window.history.replaceState({}, '', 'index.html');
 }
 
+/**
+ * Muestra el banner de la ruleta solo si el admin la tiene activa (la
+ * "oferta" con código 'ruleta' en Supabase — ver ruletaEstaActiva en
+ * js/ruleta.js y admin.html). Empieza oculto en el HTML a propósito, para
+ * no mostrarlo un instante y esconderlo justo después mientras se confirma
+ * con Supabase.
+ */
+async function actualizarBannerRuleta() {
+  const banner = document.getElementById('roulette-banner');
+  if (!banner) return;
+  if (typeof ruletaEstaActiva !== 'function') return; // js/ruleta.js no llegó a cargar
+
+  const activa = await ruletaEstaActiva();
+  banner.hidden = !activa;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   pintarCarrusel();
   pintarCategorias();
   avisarSiVieneDeUnPedido();
+  actualizarBannerRuleta();
 });

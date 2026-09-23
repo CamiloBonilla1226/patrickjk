@@ -222,6 +222,12 @@ main {
   border: 1px solid var(--amber);
   animation: roulette-glow 3s ease-in-out infinite;
 }
+/* Recordatorio (ver el mismo caso en .modal-backdrop más abajo): sin esto,
+   "hidden" no oculta nada porque .roulette-banner ya fija su propio
+   "display". */
+.roulette-banner[hidden] {
+  display: none;
+}
 /* Franja de brillo que recorre el banner en diagonal, de vez en cuando. */
 .roulette-banner::after {
   content: '';
