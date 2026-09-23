@@ -58,6 +58,16 @@ async function manejarEnvioFormulario(e) {
   // directo del clic" y la ventana simplemente no se abre.
   abrirWhatsAppConPedido(datosEntrega, items, subtotal);
 
+  // El carrito se vacía DE UNA VEZ, todavía sin esperar nada de red — en el
+  // celular, abrir WhatsApp manda el navegador a segundo plano, y ahí el
+  // sistema operativo puede pausar o cortar esta pestaña mientras espera la
+  // respuesta de Supabase (el await de abajo). Si vaciarCarrito() quedara
+  // después de ese await, esa espera colgada hacía que nunca se llegara a
+  // vaciar: el cliente volvía a la tienda y el carrito seguía con los
+  // productos del pedido que ya se había mandado, y el próximo producto que
+  // agregaba se sumaba encima de esos.
+  vaciarCarrito();
+
   // El guardado en Supabase (tabla `pedidos`) pasa DESPUÉS, sin bloquear
   // nada — si falla, el pedido por WhatsApp ya se envió de todos modos,
   // que es lo prioritario. guardarPedidoSupabase (definida en ruleta.js,
@@ -83,12 +93,9 @@ async function manejarEnvioFormulario(e) {
     }
   }
 
-  // El pedido ya se mandó por WhatsApp — el carrito de esta compra queda
-  // vacío (también se borra el código de premio, si había uno) y se vuelve
-  // al Inicio con un aviso breve. Si el guardado en Supabase falló, se
-  // avisa también (ver avisarSiVieneDeUnPedido en inicio.js) — el pedido
-  // por WhatsApp sí llegó, pero no va a aparecer en el panel de admin.
-  vaciarCarrito();
+  // Si el guardado en Supabase falló, se avisa en Inicio (ver
+  // avisarSiVieneDeUnPedido en inicio.js) — el pedido por WhatsApp sí
+  // llegó, pero no va a aparecer en el panel de admin.
   window.location.href = 'index.html?pedido=enviado' + (guardadoOk ? '' : '&guardado=no');
 }
 
