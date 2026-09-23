@@ -101,7 +101,15 @@ function avisarSiVieneDeUnPedido() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('pedido') !== 'enviado') return;
 
-  mostrarToast('¡Pedido enviado! Revisa WhatsApp para confirmar.');
+  // "&guardado=no" lo agrega entrega.js cuando guardarPedidoSupabase falló
+  // (ver el comentario allá) — el pedido por WhatsApp sí llegó, pero no
+  // quedó guardado para el panel de admin, así que vale la pena decirlo en
+  // vez de que el pedido "desaparezca" sin ninguna explicación.
+  if (params.get('guardado') === 'no') {
+    mostrarToast('Pedido enviado por WhatsApp, pero no se pudo guardar en el sistema. Avisa al negocio por si acaso.');
+  } else {
+    mostrarToast('¡Pedido enviado! Revisa WhatsApp para confirmar.');
+  }
   window.history.replaceState({}, '', 'index.html');
 }
 

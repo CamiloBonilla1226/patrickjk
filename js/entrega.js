@@ -63,10 +63,13 @@ async function manejarEnvioFormulario(e) {
   // que es lo prioritario. guardarPedidoSupabase (definida en ruleta.js,
   // expuesta en window) ya maneja sus propios errores con console.error;
   // este try/catch es una red de seguridad extra por si el módulo no
-  // llegó a cargar a tiempo.
+  // llegó a cargar a tiempo. Se guarda si funcionó o no para avisar en
+  // Inicio — antes esto fallaba en silencio (solo en la consola) y nadie
+  // se enteraba de que el pedido no había quedado guardado para el admin.
+  let guardadoOk = true;
   if (typeof guardarPedidoSupabase === 'function') {
     try {
-      await guardarPedidoSupabase({
+      guardadoOk = await guardarPedidoSupabase({
         nombre: datosEntrega.nombre,
         celular: datosEntrega.celular,
         direccion: datosEntrega.direccion,
@@ -76,14 +79,17 @@ async function manejarEnvioFormulario(e) {
       });
     } catch (error) {
       console.error('No se pudo guardar el pedido en Supabase:', error);
+      guardadoOk = false;
     }
   }
 
   // El pedido ya se mandó por WhatsApp — el carrito de esta compra queda
   // vacío (también se borra el código de premio, si había uno) y se vuelve
-  // al Inicio con un aviso breve.
+  // al Inicio con un aviso breve. Si el guardado en Supabase falló, se
+  // avisa también (ver avisarSiVieneDeUnPedido en inicio.js) — el pedido
+  // por WhatsApp sí llegó, pero no va a aparecer en el panel de admin.
   vaciarCarrito();
-  window.location.href = 'index.html?pedido=enviado';
+  window.location.href = 'index.html?pedido=enviado' + (guardadoOk ? '' : '&guardado=no');
 }
 
 /** '' si el nombre es válido, o el mensaje de error a mostrar. */

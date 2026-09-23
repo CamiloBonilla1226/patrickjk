@@ -228,8 +228,12 @@ main {
 }
 /* Recordatorio (ver el mismo caso en .modal-backdrop más abajo): sin esto,
    "hidden" no oculta nada porque .roulette-banner ya fija su propio
-   "display". */
-.roulette-banner[hidden] {
+   "display". #oferta-destacada usa un ID en la regla de arriba, así que
+   necesita su propia línea aquí — un ID siempre le gana en especificidad a
+   ".oferta-card[hidden]" (más abajo en este archivo), sin esto se veía
+   SIEMPRE, vacía, aunque el JS le pusiera "hidden". */
+.roulette-banner[hidden],
+#oferta-destacada[hidden] {
   display: none;
 }
 /* Franja de brillo que recorre el banner en diagonal, de vez en cuando. */

@@ -230,7 +230,9 @@ export async function guardarPedidoSupabase(datosPedido) {
 
   if (error) {
     console.error('No se pudo guardar el pedido en Supabase:', error);
+    return false;
   }
+  return true;
 }
 
 // ============================================================
