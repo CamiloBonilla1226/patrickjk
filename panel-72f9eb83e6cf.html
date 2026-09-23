@@ -62,10 +62,18 @@
 
         <!-- ---- Sección Pedidos ---- -->
         <div id="admin-seccion-pedidos" hidden>
-          <!-- "semana" es el filtro por defecto (ver FILTRO_PEDIDOS_INICIAL
-               en admin.js) — con muchos pedidos, listarlos TODOS de una vez
-               es lento y poco útil; el admin puede ampliar a mes o todos si
-               de verdad los necesita. -->
+          <!-- "pendiente" es el filtro de estado por defecto: al abrir
+               Pedidos, lo primero que importa es lo que falta por atender.
+               "semana" es el filtro de fecha por defecto — con muchos
+               pedidos, listarlos TODOS de una vez es lento y poco útil; el
+               admin puede ampliar a mes o todos si de verdad los necesita.
+               (ver filtroPedidosActual/filtroEstadoPedidosActual en
+               admin.js) -->
+          <div class="subtabs" id="admin-pedidos-filtros-estado">
+            <button type="button" class="active" data-filtro-estado="pendiente">Pendientes</button>
+            <button type="button" data-filtro-estado="confirmado">Confirmados</button>
+            <button type="button" data-filtro-estado="todos">Todos</button>
+          </div>
           <div class="subtabs" id="admin-pedidos-filtros">
             <button type="button" data-filtro="hoy">Hoy</button>
             <button type="button" class="active" data-filtro="semana">Semana</button>

@@ -34,6 +34,11 @@ const CODIGO_RULETA = 'ruleta';
 let filtroPedidosActual = 'semana';
 let filtroInfoActual = 'semana';
 
+// Por defecto se muestran solo los pendientes — al abrir Pedidos, lo
+// primero que importa es lo que todavía falta por confirmar/entregar, no
+// el historial completo.
+let filtroEstadoPedidosActual = 'pendiente';
+
 function calcularFechaDesdeFiltro(filtro) {
   const ahora = new Date();
   if (filtro === 'hoy') {
@@ -366,12 +371,15 @@ async function cargarPedidos() {
   // la columna de fecha en tu tabla `pedidos` (created_at, creado_en...) —
   // pedir que ordene por una columna que no existe hace fallar TODA la
   // consulta. Se trae todo sin ordenar y se ordena aquí mismo, probando
-  // los nombres más probables (ver formatearFecha más abajo). El filtro de
-  // fecha sí se manda al servidor (con .gte), para no traer de más.
+  // los nombres más probables (ver formatearFecha más abajo). Los dos
+  // filtros (fecha y estado) sí se mandan al servidor, para no traer de más.
   let consulta = supabase.from('pedidos').select('*');
   const desde = calcularFechaDesdeFiltro(filtroPedidosActual);
   if (desde) {
     consulta = consulta.gte('creado_en', desde.toISOString());
+  }
+  if (filtroEstadoPedidosActual !== 'todos') {
+    consulta = consulta.eq('confirmado', filtroEstadoPedidosActual === 'confirmado');
   }
   const { data, error } = await consulta;
 
@@ -385,9 +393,14 @@ async function cargarPedidos() {
 
   lista.innerHTML = '';
   if (!data || data.length === 0) {
-    vacio.textContent = filtroPedidosActual === 'todos'
+    const textoEstado = filtroEstadoPedidosActual === 'pendiente'
+      ? 'pendientes'
+      : filtroEstadoPedidosActual === 'confirmado'
+        ? 'confirmados'
+        : '';
+    vacio.textContent = filtroPedidosActual === 'todos' && filtroEstadoPedidosActual === 'todos'
       ? 'Todavía no hay pedidos.'
-      : 'No hay pedidos en este rango de fechas.';
+      : 'No hay pedidos ' + (textoEstado ? textoEstado + ' ' : '') + 'en este rango de fechas.';
     vacio.hidden = false;
     return;
   }
@@ -598,6 +611,17 @@ document.addEventListener('DOMContentLoaded', function () {
       if (btn.dataset.filtro === filtroPedidosActual) return;
       filtroPedidosActual = btn.dataset.filtro;
       document.querySelectorAll('#admin-pedidos-filtros button').forEach(function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      cargarPedidos();
+    });
+  });
+
+  document.querySelectorAll('#admin-pedidos-filtros-estado button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.dataset.filtroEstado === filtroEstadoPedidosActual) return;
+      filtroEstadoPedidosActual = btn.dataset.filtroEstado;
+      document.querySelectorAll('#admin-pedidos-filtros-estado button').forEach(function (b) {
         b.classList.toggle('active', b === btn);
       });
       cargarPedidos();
