@@ -229,14 +229,33 @@ function renderizarCarrito() {
 // ---- Modal de confirmación para "Vaciar carrito" ----
 // Un modal casero con <div> + CSS en vez de confirm() del navegador, que el
 // enunciado de la tarea pide evitar porque bloquea la página y se ve feo.
+// Se puede cerrar con Escape, clic en el fondo o el botón "Cancelar", y
+// atrapa el foco de teclado mientras está abierto — igual que el modal de
+// la ruleta en ruleta.js.
+let elementoConFocoAntesDelModalVaciar = null;
+
 function abrirModalVaciar() {
   const modal = document.getElementById('modal-vaciar');
-  if (modal) modal.hidden = false;
+  if (!modal) return;
+
+  elementoConFocoAntesDelModalVaciar = document.activeElement;
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  const btnCancelar = document.getElementById('modal-cancelar');
+  if (btnCancelar) btnCancelar.focus();
 }
 
 function cerrarModalVaciar() {
   const modal = document.getElementById('modal-vaciar');
-  if (modal) modal.hidden = true;
+  if (!modal) return;
+
+  modal.hidden = true;
+  document.body.style.overflow = '';
+
+  // Devuelve el foco a donde estaba antes de abrir el modal (el botón
+  // "Vaciar carrito"), en vez de dejarlo perdido en el body.
+  if (elementoConFocoAntesDelModalVaciar) elementoConFocoAntesDelModalVaciar.focus();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -292,4 +311,30 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.target === modal) cerrarModalVaciar();
     });
   }
+
+  // Escape para cerrar, y Tab/Shift+Tab atrapado dentro del modal mientras
+  // está abierto (no debe poder salir hacia el resto de la página).
+  document.addEventListener('keydown', function (e) {
+    const caja = document.getElementById('modal-vaciar-caja');
+    if (!modal || modal.hidden || !caja) return;
+
+    if (e.key === 'Escape') {
+      cerrarModalVaciar();
+      return;
+    }
+
+    if (e.key !== 'Tab') return;
+    const focosPosibles = caja.querySelectorAll('button:not([disabled])');
+    if (focosPosibles.length === 0) return;
+    const primero = focosPosibles[0];
+    const ultimo = focosPosibles[focosPosibles.length - 1];
+
+    if (e.shiftKey && document.activeElement === primero) {
+      e.preventDefault();
+      ultimo.focus();
+    } else if (!e.shiftKey && document.activeElement === ultimo) {
+      e.preventDefault();
+      primero.focus();
+    }
+  });
 });

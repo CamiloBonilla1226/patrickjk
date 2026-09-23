@@ -3,10 +3,11 @@
 // que junte { nombre, celular, direccion } + los items del carrito puede
 // usar estas funciones.
 
-// Número de WhatsApp del bar (código de país + número, sin "+" ni
-// espacios, como lo pide wa.me). Es el mismo número que ya usa el resto
-// del sitio — si el bar cambia de número algún día, este es el único
-// lugar que hay que actualizar.
+// ⚠️ NÚMERO DE WHATSAPP DEL BAR — confirmar antes de entregar el proyecto.
+// Código de país + número, sin "+" ni espacios (formato que pide wa.me).
+// Hoy tiene el mismo número que ya usa el resto del sitio (el que aparece
+// en "Nosotros" de Inicio y en el proyecto en React) — si el bar cambia de
+// número algún día, este es el único lugar del proyecto que hay que tocar.
 const NUMERO_WHATSAPP_BAR = '573146032055';
 
 /**

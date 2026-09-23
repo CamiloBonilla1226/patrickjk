@@ -245,6 +245,9 @@ function textoCortoParaRueda(texto) {
 // Estado de la partida actual: null mientras el modal está cerrado.
 // fase: 'listo' | 'girando' | 'sigue' | 'resultado'
 let estadoRuleta = null;
+// Qué elemento tenía el foco antes de abrir el modal (normalmente el botón
+// "Continuar pedido" del carrito) — para devolvérselo al cerrar.
+let elementoConFocoAntesDeLaRuleta = null;
 
 function elementosModal() {
   return {
@@ -328,6 +331,7 @@ export function abrirRuleta() {
   els.btnAccion.disabled = false;
   els.cerrar.disabled = false;
 
+  elementoConFocoAntesDeLaRuleta = document.activeElement;
   els.overlay.hidden = false;
   document.body.style.overflow = 'hidden';
   els.cerrar.focus();
@@ -342,6 +346,8 @@ function cerrarRuleta() {
   const els = elementosModal();
   if (els.overlay) els.overlay.hidden = true;
   document.body.style.overflow = '';
+
+  if (elementoConFocoAntesDeLaRuleta) elementoConFocoAntesDeLaRuleta.focus();
 }
 
 function girar() {

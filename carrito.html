@@ -72,7 +72,8 @@
          confirm() del navegador, que se ve feo y bloquea la página). Está
          oculto por defecto con "hidden" y js/carrito.js lo muestra/oculta. -->
     <div class="modal-backdrop" id="modal-vaciar" hidden>
-      <div class="modal-box" role="dialog" aria-modal="true" aria-label="Confirmar vaciar carrito">
+      <div class="modal-box" id="modal-vaciar-caja" role="dialog" aria-modal="true" aria-labelledby="modal-vaciar-titulo">
+        <h3 id="modal-vaciar-titulo" class="modal-titulo">Vaciar carrito</h3>
         <p>¿Vaciar todo el carrito? Esta acción no se puede deshacer.</p>
         <div class="modal-actions">
           <button type="button" id="modal-cancelar" class="modal-btn-secundario">Cancelar</button>
@@ -140,6 +141,7 @@
   </div>
 
   <script>window.PAGINA_ACTUAL = 'carrito';</script>
+  <script src="js/productos.js"></script>
   <script src="js/carrito.js"></script>
   <script src="js/navegacion.js"></script>
   <!-- type="module" para poder usar import dentro de ruleta.js (así se

@@ -179,6 +179,7 @@ main {
   flex: none;
   height: 54px;
   width: auto;
+  aspect-ratio: 1; /* el archivo es cuadrado (256x256) */
   object-fit: contain;
 }
 .sec-head .eyebrow {
@@ -202,6 +203,10 @@ main {
 .hero-image {
   width: 100%;
   height: auto;
+  /* Relación real del archivo (1600x872) — reserva el espacio antes de que
+     la imagen termine de cargar, para que el resto de Inicio no "salte"
+     hacia abajo cuando llegue. */
+  aspect-ratio: 1600 / 872;
   display: block;
 }
 
@@ -295,6 +300,8 @@ main {
 .physical-only-item img {
   width: 100%;
   height: auto;
+  /* Relación real de ambos archivos (1600x533). */
+  aspect-ratio: 1600 / 533;
   display: block;
 }
 
@@ -764,6 +771,11 @@ main {
   background: var(--navy-2);
   border: 1px solid var(--border-strong);
   padding: 18px;
+}
+.modal-titulo {
+  font-family: 'Fraunces';
+  font-size: 15px;
+  margin-bottom: 8px;
 }
 .modal-box p {
   font-size: 13px;
