@@ -212,10 +212,11 @@ export function generarCodigoPremio(codigo, fecha) {
  * (eso es lo prioritario): el error solo se deja en consola para poder
  * revisarlo después.
  *
- * Asume que la tabla `pedidos` tiene una columna `productos` (json) y una
- * `codigo_premio` (texto, puede ser nula) — si esas columnas todavía no
- * existen en Supabase, esta inserción falla pero, como se explica arriba,
- * eso no interrumpe nada para el cliente.
+ * `total` es obligatoria en la tabla (NOT NULL, sin valor por defecto) —
+ * como todavía no hay una lógica que calcule un descuento en dinero a
+ * partir del premio de la ruleta, se manda igual al subtotal, y
+ * `descuento_aplicado` se deja en su valor por defecto (0). Si en algún
+ * momento se calcula el descuento real, es aquí donde hay que restarlo.
  */
 export async function guardarPedidoSupabase(datosPedido) {
   const { error } = await supabase.from('pedidos').insert({
@@ -225,6 +226,7 @@ export async function guardarPedidoSupabase(datosPedido) {
     direccion: datosPedido.direccion,
     productos: datosPedido.productos,
     subtotal: datosPedido.subtotal,
+    total: datosPedido.subtotal,
     codigo_premio: datosPedido.codigoPremio || null,
   });
 
