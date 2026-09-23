@@ -116,7 +116,7 @@ function avisarSiVieneDeUnPedido() {
 /**
  * Muestra el banner de la ruleta solo si el admin la tiene activa (la
  * "oferta" con código 'ruleta' en Supabase — ver ruletaEstaActiva en
- * js/ruleta.js y admin.html). Empieza oculto en el HTML a propósito, para
+ * js/ruleta.js y el panel de admin). Empieza oculto en el HTML a propósito, para
  * no mostrarlo un instante y esconderlo justo después mientras se confirma
  * con Supabase.
  *

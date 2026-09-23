@@ -3,7 +3,7 @@
 // proyecto — ver config-supabase.js) y pinta las que estén activas.
 //
 // También se carga en index.html (Inicio) por cargarOfertaDestacada: la
-// UNA oferta que el admin eligió para mostrar ahí (ver admin.html), con
+// UNA oferta que el admin eligió para mostrar ahí (ver el panel de admin), con
 // respaldo automático a la más antigua si no ha elegido ninguna.
 //
 // Es un módulo de JavaScript (type="module") por la misma razón que
@@ -90,7 +90,7 @@ function primeraNoRuleta(ofertas) {
 
 /**
  * Pinta en Inicio la UNA oferta que debe destacarse: primero busca la que
- * el admin marcó como `destacada` (admin.html); si no hay ninguna (o la
+ * el admin marcó como `destacada` (desde el panel de admin); si no hay ninguna (o la
  * consulta falla), usa como respaldo la oferta activa más antigua — así
  * Inicio siempre muestra algo mientras exista al menos una oferta activa,
  * sin que el admin tenga que elegir una a la fuerza.

@@ -1,14 +1,20 @@
-// Panel de administrador — Ofertas y Pedidos, SIN login (decisión
-// explícita del dueño del proyecto, con el riesgo ya advertido: cualquiera
-// que tenga esta URL puede leer los pedidos de los clientes y agregar,
-// activar/desactivar o borrar ofertas). Si en algún momento se agrega un
-// login real (Supabase Auth), este archivo es el que hay que ajustar para
-// que use la sesión del usuario en vez de la llave anónima directa.
+// Panel de administrador — Ofertas, Pedidos e Información, SIN login
+// (decisión explícita del dueño del proyecto, con el riesgo ya advertido:
+// cualquiera que tenga esta URL puede leer los pedidos de los clientes y
+// agregar, activar/desactivar o borrar ofertas). La única barrera hoy es
+// que la página vive en una URL larga y al azar sin ningún link público
+// hacia ella (ver panel-72f9eb83e6cf.html) — eso NO protege los datos en
+// sí: la llave pública de Supabase (config-supabase.js) es visible en el
+// código de cualquier página del sitio, así que alguien con conocimientos
+// técnicos puede leer/escribir en las tablas directamente sin pasar por
+// aquí. Si en algún momento se agrega un login real (Supabase Auth), este
+// archivo es el que hay que ajustar para que use la sesión del usuario en
+// vez de la llave anónima directa, y ahí sí se puede cerrar RLS de verdad.
 //
 // Módulo de JavaScript (type="module") por la misma razón que ruleta.js y
 // ofertas.js: así se puede usar `import` para traer el cliente de Supabase
 // desde un CDN sin agregar un build step al proyecto. formatPrice viene de
-// productos.js (cargado antes que este módulo en admin.html).
+// productos.js (cargado antes que este módulo en panel-72f9eb83e6cf.html).
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config-supabase.js';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 

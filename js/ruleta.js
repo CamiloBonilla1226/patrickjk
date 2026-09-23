@@ -82,7 +82,7 @@ export async function verificarSiYaJugo() {
 /**
  * La ruleta en sí es una "oferta" más en la tabla `ofertas` (con el código
  * fijo 'ruleta', para distinguirla de las ofertas normales que el admin
- * crea desde admin.html) — el admin la activa o desactiva desde ahí, igual
+ * crea desde el panel de admin) — el admin la activa o desactiva desde ahí, igual
  * que cualquier otra oferta. Si esa fila no existe o Supabase falla, se
  * asume APAGADA (lo contrario de verificarSiYaJugo arriba): esto no es un
  * control de abuso, es una promoción que el dueño del negocio prende o
