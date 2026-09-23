@@ -123,17 +123,18 @@ main {
   box-shadow: none;
 }
 
-/* Topbar del admin: dos filas dentro del mismo bloque anclado (logo/título
-   arriba, menú Ofertas/Pedidos/Información abajo) — así el menú queda
+/* Topbar de dos filas dentro del mismo bloque anclado (logo/título arriba,
+   subtabs abajo) — usado por el admin (Ofertas/Pedidos/Información) y por
+   la carta del estanco (categorías), para que el menú de pestañas quede
    siempre visible al hacer scroll sin tener que calcular aparte a qué
    altura exacta "anclarlo" debajo del logo. */
-.admin-topbar {
+.topbar-apilado {
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
   padding-bottom: 0;
 }
-.admin-topbar #admin-subtabs {
+.topbar-apilado .subtabs {
   margin-bottom: 0;
 }
 
@@ -1909,38 +1910,6 @@ main {
 .estanco-page main {
   padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
 }
-.estanco-nav {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  margin: 0 -16px 18px;
-  padding: 0 16px 4px;
-  scrollbar-width: none;
-}
-.estanco-nav::-webkit-scrollbar {
-  display: none;
-}
-.estanco-nav a {
-  flex: none;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 8px 14px;
-  border: 1px solid var(--border-strong);
-  color: var(--cream-dim);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.estanco-nav a:hover,
-.estanco-nav a:focus-visible {
-  border-color: var(--amber);
-  color: var(--amber);
-}
-.estanco-seccion {
-  scroll-margin-top: 12px;
-}
-.estanco-lista {
-  margin-bottom: 8px;
-}
 .estanco-item {
   display: flex;
   align-items: baseline;
@@ -1949,7 +1918,7 @@ main {
   padding: 10px 0;
   border-bottom: 1px dashed var(--border);
 }
-.estanco-lista .estanco-item:last-child {
+#estanco-lista .estanco-item:last-child {
   border-bottom: 0;
 }
 .estanco-item-info {

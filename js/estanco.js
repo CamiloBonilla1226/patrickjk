@@ -1,23 +1,16 @@
 // Pinta la carta del punto físico (estanco.html) a partir de
-// productosEstanco (ver js/productos-estanco.js) — agrupada por categoría,
-// con un salto rápido arriba para ir directo a cada una. Es una sola
-// pantalla sin más interacción que esos saltos: no hay carrito ni fichas,
-// así que no hace falta nada de lo que ya existe en carrito.js/ficha.js.
+// productosEstanco (ver js/productos-estanco.js). Mismo patrón de subtabs
+// que categoriaActiva en menu.js: se muestra SOLO la categoría elegida a la
+// vez, no todo el catálogo de un tirón — con muchos productos, una sola
+// página larga era difícil de leer desde el celular en el punto físico.
 
-// Las categorías del catálogo (Cervezas, Aperitivos, Mecato, Bebidas,
-// Alcohol) no tienen tildes ni caracteres raros, así que alcanza con pasar
-// a minúsculas — no hace falta la limpieza de acentos que sí necesita
-// normalizarTexto en menu.js (ese compara texto libre escrito por el
-// cliente en el buscador).
-function idParaCategoria(categoria) {
-  return 'estanco-cat-' + categoria.toLowerCase();
-}
+var categoriaActivaEstanco = categoriasEstanco[0];
 
 function crearFilaEstanco(producto) {
-  const fila = document.createElement('div');
+  var fila = document.createElement('div');
   fila.className = 'estanco-item';
 
-  const subtitulo = producto.sabores && producto.sabores.length
+  var subtitulo = producto.sabores && producto.sabores.length
     ? producto.sabores.join(', ')
     : producto.descripcion || '';
 
@@ -37,45 +30,49 @@ function crearFilaEstanco(producto) {
   return fila;
 }
 
-function pintarCartaEstanco() {
-  const nav = document.getElementById('estanco-nav');
-  const contenido = document.getElementById('estanco-contenido');
-  if (!nav || !contenido) return;
+function renderizarListaEstanco() {
+  var lista = document.getElementById('estanco-lista');
+  var titulo = document.getElementById('estanco-titulo');
+  if (!lista) return;
 
-  nav.innerHTML = '';
-  contenido.innerHTML = '';
+  if (titulo) titulo.textContent = categoriaActivaEstanco;
+
+  lista.innerHTML = '';
+  productosEstanco
+    .filter(function (producto) {
+      return producto.categoria === categoriaActivaEstanco;
+    })
+    .forEach(function (producto) {
+      lista.appendChild(crearFilaEstanco(producto));
+    });
+}
+
+function seleccionarCategoriaEstanco(categoria) {
+  categoriaActivaEstanco = categoria;
+  document.querySelectorAll('#estanco-subtabs button').forEach(function (btn) {
+    btn.classList.toggle('active', btn.dataset.categoria === categoria);
+  });
+  renderizarListaEstanco();
+}
+
+function pintarSubtabsEstanco() {
+  var contenedor = document.getElementById('estanco-subtabs');
+  if (!contenedor) return;
 
   categoriasEstanco.forEach(function (categoria) {
-    const idCategoria = idParaCategoria(categoria);
-
-    const link = document.createElement('a');
-    link.href = '#' + idCategoria;
-    link.textContent = categoria;
-    nav.appendChild(link);
-
-    const seccion = document.createElement('div');
-    seccion.className = 'estanco-seccion';
-    seccion.id = idCategoria;
-
-    const titulo = document.createElement('div');
-    titulo.className = 'block-title';
-    titulo.innerHTML = '<h2></h2>';
-    titulo.querySelector('h2').textContent = categoria;
-    seccion.appendChild(titulo);
-
-    const lista = document.createElement('div');
-    lista.className = 'estanco-lista';
-    productosEstanco
-      .filter(function (producto) {
-        return producto.categoria === categoria;
-      })
-      .forEach(function (producto) {
-        lista.appendChild(crearFilaEstanco(producto));
-      });
-    seccion.appendChild(lista);
-
-    contenido.appendChild(seccion);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.dataset.categoria = categoria;
+    btn.textContent = categoria;
+    if (categoria === categoriaActivaEstanco) btn.classList.add('active');
+    btn.addEventListener('click', function () {
+      seleccionarCategoriaEstanco(categoria);
+    });
+    contenedor.appendChild(btn);
   });
 }
 
-document.addEventListener('DOMContentLoaded', pintarCartaEstanco);
+document.addEventListener('DOMContentLoaded', function () {
+  pintarSubtabsEstanco();
+  renderizarListaEstanco();
+});
