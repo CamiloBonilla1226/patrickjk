@@ -37,18 +37,13 @@ const productos = [
   { id: 'cerveza-budweiser', nombre: 'Budweiser', precio: 5000, categoria: 'Cervezas', estado: 'disponible', imagen: 'productos/cerveza-budweiser.webp' },
   { id: 'cerveza-tecate', nombre: 'Tecate', precio: 4000, categoria: 'Cervezas', estado: 'disponible', imagen: 'productos/cerveza-tecate.webp' },
 
-  // Aperitivos
-  { id: 'aperitivo-cuates-rojo', nombre: 'Cuates Rojo', precio: 6000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-cuates-rojo.webp' },
-  { id: 'aperitivo-cuates-amarillo', nombre: 'Cuates Amarillo', precio: 6000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-cuates-amarillo.webp' },
-  { id: 'aperitivo-cuates-verde', nombre: 'Cuates Verde', precio: 6000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-cuates-verde.webp' },
-  { id: 'aperitivo-smirnoff-manzana-verde', nombre: 'Smirnoff Manzana Verde', precio: 10000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-smirnoff-manzana-verde.webp' },
-  { id: 'aperitivo-smirnoff-original', nombre: 'Smirnoff Original', precio: 10000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-smirnoff-original.webp' },
-  { id: 'aperitivo-redds-rose', nombre: "Redd's Rose", precio: 5000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-redds-rose.webp' },
-  { id: 'aperitivo-redds-verde', nombre: "Redd's Verde", precio: 5000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-redds-verde.webp' },
-  { id: 'aperitivo-like-blueberry', nombre: 'Like Blueberry', precio: 5000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-like-blueberry.webp' },
-  { id: 'aperitivo-like-citrus', nombre: 'Like Citrus', precio: 5000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-like-citrus.webp' },
-  { id: 'aperitivo-like-mango', nombre: 'Like Mango', precio: 5000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-like-mango.webp' },
-  { id: 'aperitivo-like-fresh-apple', nombre: 'Like Fresh Apple', precio: 5000, categoria: 'Aperitivos', estado: 'disponible', imagen: 'productos/aperitivo-like-fresh-apple.webp' },
+  // Aperitivos — cada uno aparece UNA sola vez y el cliente elige el sabor
+  // en la ficha del producto (mismo patrón que Electrolit/Gatorade en
+  // Bebidas), en vez de repetir el producto una vez por sabor.
+  { id: 'aperitivo-cuates', nombre: 'Cuates', precio: 6000, categoria: 'Aperitivos', estado: 'disponible', sabores: ['Rojo', 'Amarillo', 'Verde'], imagen: 'productos/aperitivo-cuates-rojo.webp' },
+  { id: 'aperitivo-smirnoff', nombre: 'Smirnoff', precio: 10000, categoria: 'Aperitivos', estado: 'disponible', sabores: ['Manzana Verde', 'Original'], imagen: 'productos/aperitivo-smirnoff-manzana-verde.webp' },
+  { id: 'aperitivo-redds', nombre: "Redd's", precio: 5000, categoria: 'Aperitivos', estado: 'disponible', sabores: ['Rose', 'Verde'], imagen: 'productos/aperitivo-redds-rose.webp' },
+  { id: 'aperitivo-like', nombre: 'Like', precio: 5000, categoria: 'Aperitivos', estado: 'disponible', sabores: ['Blueberry', 'Citrus', 'Mango', 'Fresh Apple'], imagen: 'productos/aperitivo-like-blueberry.webp' },
 
   // Mecato
   { id: 'mecato-bombones', nombre: 'Bombones', precio: 1000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-bombones.png' },
@@ -56,11 +51,8 @@ const productos = [
   { id: 'mecato-traidet', nombre: 'Traidet', precio: 3000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-trident.webp' },
   { id: 'mecato-chao', nombre: 'Chao', precio: 2500, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-chao.webp' },
   { id: 'mecato-de-toditos', nombre: 'De Toditos', precio: 5000, categoria: 'Mecato', estado: 'disponible', sabores: ['Mix', 'BBQ', 'Limón', 'Natural', 'Pollo'], imagen: 'productos/mecato-de-toditos.webp' },
-  { id: 'mecato-margarita-limon', nombre: 'Margarita Limón', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-margarita-limon.webp' },
-  { id: 'mecato-margarita-natural', nombre: 'Margarita Natural', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-margarita-natural.webp' },
-  { id: 'mecato-margarita-pollo', nombre: 'Margarita Pollo', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-margarita-pollo.webp' },
-  { id: 'mecato-onduladas-mayonesa', nombre: 'Onduladas Mayonesa', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-onduladas-mayonesa.webp' },
-  { id: 'mecato-onduladas-tomate', nombre: 'Onduladas Tomate', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-onduladas-tomate.webp' },
+  { id: 'mecato-margarita', nombre: 'Margarita', precio: 5000, categoria: 'Mecato', estado: 'disponible', sabores: ['Limón', 'Natural', 'Pollo'], imagen: 'productos/mecato-margarita-limon.webp' },
+  { id: 'mecato-onduladas', nombre: 'Onduladas', precio: 5000, categoria: 'Mecato', estado: 'disponible', sabores: ['Mayonesa', 'Tomate'], imagen: 'productos/mecato-onduladas-mayonesa.webp' },
   { id: 'mecato-cheetos', nombre: 'Cheetos', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-cheetos.webp' },
   { id: 'mecato-natuchips', nombre: 'Natuchips', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-natuchips.webp' },
   { id: 'mecato-doritos', nombre: 'Doritos', precio: 5000, categoria: 'Mecato', estado: 'disponible', imagen: 'productos/mecato-doritos.webp' },
