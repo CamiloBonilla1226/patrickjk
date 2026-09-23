@@ -722,6 +722,27 @@ main {
   border: 1px solid var(--border-strong);
   background: transparent;
   color: var(--cream-dim);
+  text-align: center;
+}
+/* Ancho fijo (en vez de que cada botón mida lo que ocupe su propio texto)
+   para que las filas de ofertas queden alineadas entre sí — el texto de
+   estos dos botones cambia según el estado ("Destacar en Inicio" ⇄ "★
+   Destacada", "Activar" ⇄ "Desactivar"), y sin un ancho fijo cada fila
+   terminaba con los botones en un lugar distinto según cuál texto le
+   tocara. */
+.admin-destacar-btn {
+  width: 128px;
+}
+.admin-toggle-btn {
+  width: 84px;
+}
+/* Reserva el mismo espacio que ocupa un botón normal, pero sin mostrarlo
+   ni dejarlo interactuar — usado en la fila de la ruleta, que no tiene
+   botón de "Destacar en Inicio" (ver crearFilaOferta en admin.js), para
+   que esa fila no quede con menos botones (y por lo tanto asimétrica)
+   frente a las demás. */
+.invisible-reserva-espacio {
+  visibility: hidden;
 }
 .admin-destacar-btn:not(:disabled):hover {
   border-color: var(--amber);

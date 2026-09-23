@@ -128,8 +128,15 @@ function crearFilaOferta(oferta) {
 
   if (esRuleta) {
     // La ruleta ya tiene su propio banner en Inicio — no tiene sentido que
-    // además compita por ser "la oferta destacada" genérica.
-    botonDestacar.remove();
+    // además compita por ser "la oferta destacada" genérica. Antes este
+    // botón se quitaba del todo con .remove(), pero eso dejaba la fila de
+    // la ruleta con menos botones que las demás y se veía chueca/asimétrica
+    // frente al resto de la lista — se deja en el DOM (con
+    // "invisible-reserva-espacio", ver esa clase en estilos.css) para que
+    // ocupe el mismo espacio sin poder usarse ni verse.
+    botonDestacar.disabled = true;
+    botonDestacar.classList.add('invisible-reserva-espacio');
+    botonDestacar.tabIndex = -1;
     botonBorrar.disabled = true;
     botonBorrar.setAttribute('aria-label', 'La oferta de la ruleta no se puede borrar');
     botonBorrar.title = 'La ruleta no se puede borrar — solo activar o desactivar';
