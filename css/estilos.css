@@ -851,12 +851,39 @@ main {
 }
 .pedido-acciones {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
+/* Mismo alto que .admin-borrar-btn (30px, ver más arriba) para que el
+   botón de borrar quede parejo con estos dos en la misma fila. */
 .pedido-acciones .pedido-confirmar-btn,
 .pedido-acciones .pedido-pendiente-btn {
   flex: 1;
-  padding: 9px 8px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 9px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--cream-dim);
+}
+.pedido-confirmar-btn:not(:disabled) {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.pedido-pendiente-btn:not(:disabled) {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+.pedido-confirmar-btn:disabled,
+.pedido-pendiente-btn:disabled {
+  cursor: default;
+  opacity: 0.4;
 }
 .pedido-ver-btn {
   width: 100%;
