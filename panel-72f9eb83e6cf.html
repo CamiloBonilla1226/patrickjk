@@ -18,8 +18,20 @@
 </head>
 <body>
   <div class="app">
-    <header class="topbar">
+    <!-- admin-topbar: mismo .topbar anclado (position: sticky) que el resto
+         del sitio, pero de dos filas — logo/título y el menú
+         Ofertas/Pedidos/Información van juntos en el mismo bloque anclado,
+         así el menú queda siempre visible al hacer scroll sin necesidad de
+         calcular a mano la altura exacta del logo para "anclarlo" aparte
+         (ver .admin-topbar en estilos.css). -->
+    <header class="topbar admin-topbar">
       <span class="logo-text">Patrick's JK — Admin</span>
+
+      <div class="subtabs" id="admin-subtabs">
+        <button type="button" class="active" data-seccion="ofertas">Ofertas</button>
+        <button type="button" data-seccion="pedidos">Pedidos</button>
+        <button type="button" data-seccion="info">Información</button>
+      </div>
     </header>
 
     <main>
@@ -29,12 +41,7 @@
             <div class="eyebrow">Panel</div>
             <h1 id="admin-titulo-pantalla">Ofertas</h1>
           </div>
-        </div>
-
-        <div class="subtabs" id="admin-subtabs">
-          <button type="button" class="active" data-seccion="ofertas">Ofertas</button>
-          <button type="button" data-seccion="pedidos">Pedidos</button>
-          <button type="button" data-seccion="info">Información</button>
+          <img class="sec-head-logo" src="imagenes/logo-optimized.png" alt="Patrick's JK" />
         </div>
 
         <p id="admin-mensaje" class="admin-mensaje" hidden></p>

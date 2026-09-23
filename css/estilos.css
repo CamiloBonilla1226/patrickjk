@@ -116,6 +116,20 @@ main {
   box-shadow: none;
 }
 
+/* Topbar del admin: dos filas dentro del mismo bloque anclado (logo/título
+   arriba, menú Ofertas/Pedidos/Información abajo) — así el menú queda
+   siempre visible al hacer scroll sin tener que calcular aparte a qué
+   altura exacta "anclarlo" debajo del logo. */
+.admin-topbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding-bottom: 0;
+}
+.admin-topbar #admin-subtabs {
+  margin-bottom: 0;
+}
+
 /* ================= TABBAR ================= */
 .tabbar {
   position: fixed;
