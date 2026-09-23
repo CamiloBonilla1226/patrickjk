@@ -9,7 +9,7 @@
 // id y no hacen nada si no los encuentran — así es igual de seguro cargar
 // este archivo en cualquier pantalla.
 
-const FICHA_FEEDBACK_MS = 1200; // cuánto dura el "¡Agregado!" antes de volver a "Agregar al carrito"
+const FICHA_FEEDBACK_MS = 450; // cuánto dura el "¡Agregado!" antes de volver a "Agregar al carrito"
 
 let productoAbiertoEnFicha = null; // el producto completo (de productos.js) que muestra la ficha ahora mismo
 let saborSeleccionadoEnFicha = null;
@@ -66,7 +66,10 @@ function pintarFicha(producto) {
     producto.sabores.forEach(function (sabor) {
       const boton = document.createElement('button');
       boton.type = 'button';
-      boton.className = 'ficha-opt';
+      // Mientras no se haya elegido ningún sabor, todas las opciones
+      // brillan (mismo efecto que el banner de la ruleta/oferta en Inicio)
+      // para llamar la atención sobre lo que falta antes de poder agregar.
+      boton.className = 'ficha-opt' + (saborSeleccionadoEnFicha ? '' : ' ficha-opt-brillante');
       boton.setAttribute('role', 'radio');
       boton.setAttribute('aria-checked', String(sabor === saborSeleccionadoEnFicha));
       boton.textContent = sabor;

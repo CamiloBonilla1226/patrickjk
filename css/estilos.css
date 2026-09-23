@@ -1485,6 +1485,20 @@ main {
   color: var(--amber);
   background: var(--amber-tint);
 }
+/* Mientras no se haya elegido ningún sabor, las opciones brillan con el
+   mismo efecto que el banner de la ruleta/oferta destacada en Inicio (ver
+   roulette-glow más abajo) — para que sea obvio que hay algo pendiente de
+   elegir antes de poder agregar. Se apaga apenas se elige uno (ver
+   pintarFicha en js/ficha.js). */
+.ficha-opt.ficha-opt-brillante {
+  border-color: var(--amber);
+  animation: roulette-glow 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ficha-opt.ficha-opt-brillante {
+    animation: none;
+  }
+}
 .ficha-footer {
   flex: none;
   display: flex;
