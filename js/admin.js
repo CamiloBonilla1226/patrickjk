@@ -3,7 +3,7 @@
 // cualquiera que tenga esta URL puede leer los pedidos de los clientes y
 // agregar, activar/desactivar o borrar ofertas). La única barrera hoy es
 // que la página vive en una URL larga y al azar sin ningún link público
-// hacia ella (ver panel-72f9eb83e6cf.html) — eso NO protege los datos en
+// hacia ella (ver panel-72f9eb83e6cf1.html) — eso NO protege los datos en
 // sí: la llave pública de Supabase (config-supabase.js) es visible en el
 // código de cualquier página del sitio, así que alguien con conocimientos
 // técnicos puede leer/escribir en las tablas directamente sin pasar por
@@ -14,7 +14,7 @@
 // Módulo de JavaScript (type="module") por la misma razón que ruleta.js y
 // ofertas.js: así se puede usar `import` para traer el cliente de Supabase
 // desde un CDN sin agregar un build step al proyecto. formatPrice viene de
-// productos.js (cargado antes que este módulo en panel-72f9eb83e6cf.html).
+// productos.js (cargado antes que este módulo en panel-72f9eb83e6cf1.html).
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config-supabase.js';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 

@@ -201,7 +201,7 @@ function actualizarVistaDelCarrito(animarBadge) {
 // Pintado de la pantalla Carrito (carrito.html)
 // ============================================================
 // Estas funciones solo hacen algo si los elementos de carrito.html existen
-// en la página actual — en menu.html o tienda.html simplemente no encuentran
+// en la página actual — en menu.html o tienda1.html simplemente no encuentran
 // nada y no pasa nada, así que es seguro cargar este archivo en todas
 // las pantallas para tener siempre disponibles agregarAlCarrito, etc.
 

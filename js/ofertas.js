@@ -2,7 +2,7 @@
 // lectura, con la misma "anon key" pública que ya usa el resto del
 // proyecto — ver config-supabase.js) y pinta las que estén activas.
 //
-// También se carga en tienda.html (Inicio) por cargarOfertaDestacada: la
+// También se carga en tienda1.html (Inicio) por cargarOfertaDestacada: la
 // UNA oferta que el admin eligió para mostrar ahí (ver el panel de admin), con
 // respaldo automático a la más antigua si no ha elegido ninguna.
 //

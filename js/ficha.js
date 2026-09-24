@@ -3,7 +3,7 @@
 // (ver productos.js) — el selector de sabor obligatorio antes de poder
 // agregarlo al carrito. Es el mismo panel en las dos pantallas: cada una
 // solo necesita tener su propio bloque de HTML oculto (ver el comentario
-// "Ficha de producto" en menu.html / tienda.html) y cargar este archivo.
+// "Ficha de producto" en menu.html / tienda1.html) y cargar este archivo.
 //
 // Al igual que carrito.js, todas estas funciones buscan sus elementos por
 // id y no hacen nada si no los encuentran — así es igual de seguro cargar
